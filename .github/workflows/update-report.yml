@@ -45,8 +45,16 @@ jobs:
       - name: Render In-Browser Summary
         if: always()
         run: |
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO_NAME="${{ github.event.repository.name }}"
+          PAGES_URL="https://${OWNER_LOWER}.github.io/${REPO_NAME}/report.html"
+          PREVIEW_URL="https://htmlpreview.github.io/?https://github.com/${{ github.repository }}/blob/main/report.html"
+
+          echo "# 📊 Strategy & Performance Report" >> $GITHUB_STEP_SUMMARY
+          echo "### 🌐 [👉 Click Here to Open Live HTML Report (GitHub Pages)](${PAGES_URL})" >> $GITHUB_STEP_SUMMARY
+          echo "*Alternative link:* [Open via HTML Previewer](${PREVIEW_URL})" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
           if [ -f report.md ]; then
-            echo "Publishing report.md to GitHub Actions Step Summary..."
             cat report.md >> $GITHUB_STEP_SUMMARY
           fi
 
