@@ -3,14 +3,15 @@ name: Run Breeden-Litzenberger Strategy & Update Report
 # 1. Triggers
 on:
   schedule:
-    # Runs every day at 00:00 UTC (Adjust cron syntax as needed)
+    # Runs every day at 00:00 UTC
     - cron: '0 0 * * *'
   # Allows manual runs via the "Actions" tab in GitHub UI
   workflow_dispatch:
 
-# 2. Permissions required to push commits back to the repo
+# 2. Permissions required to push commits and publish summaries
 permissions:
   contents: write
+  actions: read
 
 jobs:
   run-trading-pipeline:
@@ -21,11 +22,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Python
+      # Step 2: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
       # Step 3: Install dependencies (pandas, numpy, scipy, yfinance, etc.)
       - name: Install Dependencies
@@ -33,15 +35,38 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # Step 4: Run trader logic & pipe status check output to report.txt
-      - name: Run Trading Pipeline & Generate Report
+      # Step 4: Run strategy logic & generate multi-format reports
+      - name: Run Trading Pipeline & Generate Reports
         run: |
           python dynamic_trader_v2.py
-          python status.py > report.txt
+          python status.py
 
-      # Step 5: Commit both the updated CSV state & report.txt back to repo
-      - name: Commit and Push State & Report
+      # Step 5: Render In-Browser GitHub Actions Step Summary
+      - name: Render In-Browser Summary
+        if: always()
+        run: |
+          if [ -f report.md ]; then
+            echo "Publishing report.md to GitHub Actions Step Summary..."
+            cat report.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # Step 6: Upload Reports and Data as Workflow Artifacts
+      - name: Upload Strategy Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trading-bot-performance-report
+          path: |
+            report.html
+            report.md
+            report.txt
+            dynamic_trades_2.0.csv
+          retention-days: 30
+          if-no-files-found: warn
+
+      # Step 7: Commit updated CSV state & all reports back to repository
+      - name: Commit and Push State & Reports
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chrono: update trade state & strategy report [skip ci]"
-          file_pattern: "report.txt dynamic_trades_2.0.csv"
+          commit_message: "chrono: update trade state & strategy reports [skip ci]"
+          file_pattern: "report.txt report.md report.html dynamic_trades_2.0.csv"
