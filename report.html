@@ -1,0 +1,3758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantitative Strategy Performance & KPI Master Audit</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --surface: #111827;
+            --surface-elevated: #1a2234;
+            --border: #243048;
+            --border-subtle: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.15);
+            --green: #10b981;
+            --green-bg: rgba(16, 185, 129, 0.12);
+            --red: #ef4444;
+            --red-bg: rgba(239, 68, 68, 0.12);
+            --amber: #f59e0b;
+            --amber-bg: rgba(245, 158, 11, 0.12);
+            --purple: #a855f7;
+            --purple-bg: rgba(168, 85, 247, 0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 1.5rem;
+        }
+        .container { max-width: 1320px; margin: 0 auto; }
+        
+        /* Sticky Top Navigation */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 0.75rem 1rem;
+            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            overflow-x: auto;
+            gap: 1rem;
+        }
+        .nav-links { display: flex; gap: 0.5rem; flex-wrap: nowrap; }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .nav-link:hover { background: var(--surface-elevated); color: var(--accent); }
+
+        /* Header */
+        header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        h1 { font-size: 1.85rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+        .subtitle { color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.35rem; }
+        
+        /* Hero KPI Grid */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .hero-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .hero-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .hero-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hero-val { font-size: 1.95rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .hero-sub { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* Verdict Banner */
+        .verdict-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+        .verdict-banner.warning {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(245, 158, 11, 0.08) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .verdict-icon { font-size: 2.2rem; }
+        .verdict-text h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .verdict-text p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1024px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .chart-title { font-size: 1rem; font-weight: 700; color: #fff; }
+        .chart-legend { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text-secondary); }
+        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .chart-svg { width: 100%; height: auto; display: block; }
+
+        /* Section Headings */
+        .section-header {
+            margin: 2.5rem 0 1rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title { font-size: 1.35rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
+        .section-desc { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* Comprehensive KPI Cards & Tables */
+        .kpi-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .kpi-table th {
+            background: var(--surface-elevated);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.85rem 1.1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .kpi-table td {
+            padding: 1rem 1.1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .kpi-table tr:last-child td { border-bottom: none; }
+        .kpi-table tr:hover td { background: rgba(255, 255, 255, 0.015); }
+        
+        .kpi-name { font-weight: 700; color: #fff; font-size: 0.95rem; display: block; }
+        .kpi-formula { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.75rem; color: var(--text-muted); }
+        .kpi-meaning { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4; }
+        .kpi-desirable {
+            background: var(--surface-elevated);
+            border-left: 3px solid var(--accent);
+            padding: 0.35rem 0.6rem;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        /* Badges & Tags */
+        .badge-pill {
+            display: inline-block;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-blue { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+        .tag {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .tag-long { background: var(--green-bg); color: var(--green); }
+        .tag-short { background: var(--red-bg); color: var(--red); }
+        .tag-closed { background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); }
+        .tag-open { background: var(--accent-glow); color: var(--accent); }
+
+        .pos { color: var(--green); }
+        .neg { color: var(--red); }
+        .zero { color: var(--text-muted); }
+
+        /* Filter Controls */
+        .filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            min-width: 240px;
+        }
+        .search-input:focus { border-color: var(--accent); }
+        .btn-filter {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-filter:hover, .btn-filter.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        /* Callout Box */
+        .callout {
+            background: var(--surface);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .callout-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--accent); }
+        .callout-body { color: var(--text-secondary); font-size: 0.88rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- Sticky Navigation -->
+        <nav class="top-nav">
+            <div style="font-weight: 800; font-size: 0.9rem; color: #fff;">📊 QUANT AUDIT</div>
+            <div class="nav-links">
+                <a href="#summary" class="nav-link">Executive Summary</a>
+                <a href="#capital" class="nav-link">1. Capital & Returns</a>
+                <a href="#trade-profile" class="nav-link">2. Trade Quality</a>
+                <a href="#risk-drawdown" class="nav-link">3. Risk & Drawdown</a>
+                <a href="#ratios" class="nav-link">4. Risk Ratios</a>
+                <a href="#capm" class="nav-link">5. CAPM & Alpha</a>
+                <a href="#stats-tests" class="nav-link">6. Hypothesis Tests</a>
+                <a href="#kelly" class="nav-link">7. Kelly Sizing</a>
+                <a href="#trade-log" class="nav-link">8. Trade Log</a>
+                <a href="#encyclopedia" class="nav-link">9. KPI Guide</a>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header id="summary">
+            <div>
+                <h1>🤖 Quantitative Trading Bot Performance Audit</h1>
+                <div class="subtitle">
+                    Evaluation Window: <strong>2025-12-25</strong> to <strong>2026-08-14</strong> (232 calendar days / 0.64 yrs) &bull; Benchmark: <strong>SPY (S&P 500)</strong>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span class="badge-pill badge-blue">Position Sizing: 20% per trade</span>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Risk-Free Rate: 4.50% T-Bill</div>
+            </div>
+        </header>
+
+        <!-- Verdict Banner -->
+        <div class="verdict-banner ">
+            <div class="verdict-icon">🏆</div>
+            <div class="verdict-text">
+                <h3>Strategy Beat the Market by $+11,211.08 (+112.11% Active Spread)</h3>
+                <p>
+                    Strategy delivered <strong>+125.38%</strong> cumulative return (<strong>+259.44% CAGR</strong>) compared to SPY's <strong>+13.27%</strong>.
+                    Statistical testing confirms a genuine trading edge rejecting random chance at 95% confidence.
+                </p>
+            </div>
+        </div>
+
+        <!-- Hero KPIs -->
+        <div class="hero-grid">
+            <div class="hero-card">
+                <div class="hero-title">Ending Equity <span class="badge-pill badge-blue">Portfolio</span></div>
+                <div class="hero-val">$22,538.38</div>
+                <div class="hero-sub">Initial: $10,000.00 &bull; Profit: <span class="pos">$+12,538.38</span></div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-title">Annualized Return (CAGR) <span class="badge-pill badge-green">Compounded</span></div>
+                <div class="hero-val" style="color: #10b981;">+259.44%</div>
+                <div class="hero-sub">SPY CAGR: +21.68% &bull; Spread: <span style="color:#10b981;">+237.76%</span></div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-title">Sharpe Ratio <span class="badge-pill badge-blue">Risk-Adjusted</span></div>
+                <div class="hero-val">4.37</div>
+                <div class="hero-sub">SPY Sharpe: 0.96 &bull; Sortino: 10.03</div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-title">Win Rate / Payoff <span class="badge-pill badge-amber">Execution</span></div>
+                <div class="hero-val">40.80%</div>
+                <div class="hero-sub">Payoff: 2.01x &bull; Profit Factor: 1.62</div>
+            </div>
+        </div>
+
+        <!-- Visual Charts Grid -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📈 Compounded Equity Growth vs S&P 500</div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><div class="legend-dot" style="background:#38bdf8;"></div> Your Bot ($22,538)</div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#94a3b8;"></div> SPY Buy & Hold ($11,327)</div>
+                    </div>
+                </div>
+                
+    <svg viewBox="0 0 900 240" class="chart-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="botGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+            </linearGradient>
+        </defs>
+        
+        <line x1="60" y1="210.0" x2="880" y2="210.0" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+        <text x="52" y="214.0" fill="#94a3b8" font-size="11" text-anchor="end">$9,059</text>
+        
+
+        <line x1="60" y1="115.0" x2="880" y2="115.0" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+        <text x="52" y="119.0" fill="#94a3b8" font-size="11" text-anchor="end">$16,362</text>
+        
+
+        <line x1="60" y1="20.0" x2="880" y2="20.0" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+        <text x="52" y="24.0" fill="#94a3b8" font-size="11" text-anchor="end">$23,665</text>
+        
+        <path d="M 60.0,197.8 L 64.7,197.6 L 69.4,195.2 L 74.1,196.7 L 78.9,198.1 L 83.6,199.8 L 88.3,193.5 L 93.0,197.8 L 97.7,197.9 L 102.4,200.2 L 107.1,203.8 L 111.8,203.6 L 116.6,200.7 L 121.3,199.2 L 126.0,196.2 L 130.7,198.1 L 135.4,197.7 L 140.1,199.1 L 144.8,201.1 L 149.5,194.2 L 154.3,196.0 L 159.0,187.8 L 163.7,190.7 L 168.4,190.8 L 173.1,189.3 L 177.8,189.1 L 182.5,184.0 L 187.2,178.2 L 192.0,178.5 L 196.7,172.6 L 201.4,173.7 L 206.1,175.8 L 210.8,169.4 L 215.5,171.4 L 220.2,170.2 L 224.9,171.8 L 229.7,171.3 L 234.4,174.0 L 239.1,176.2 L 243.8,177.1 L 248.5,177.6 L 253.2,179.8 L 257.9,173.9 L 262.6,173.8 L 267.4,175.5 L 272.1,166.2 L 276.8,168.3 L 281.5,163.8 L 286.2,166.0 L 290.9,170.2 L 295.6,168.3 L 300.3,156.3 L 305.1,158.5 L 309.8,165.4 L 314.5,168.4 L 319.2,171.7 L 323.9,188.3 L 328.6,188.9 L 333.3,191.4 L 338.0,185.9 L 342.8,179.3 L 347.5,177.2 L 352.2,177.6 L 356.9,177.0 L 361.6,176.3 L 366.3,176.8 L 371.0,179.0 L 375.7,177.8 L 380.5,180.3 L 385.2,175.8 L 389.9,177.7 L 394.6,173.7 L 399.3,168.1 L 404.0,167.2 L 408.7,168.0 L 413.4,169.7 L 418.2,170.6 L 422.9,170.2 L 427.6,144.7 L 432.3,130.8 L 437.0,130.3 L 441.7,133.4 L 446.4,136.1 L 451.1,139.9 L 455.9,140.9 L 460.6,143.0 L 465.3,92.5 L 470.0,92.6 L 474.7,92.2 L 479.4,94.1 L 484.1,77.9 L 488.9,82.1 L 493.6,88.0 L 498.3,91.0 L 503.0,96.4 L 507.7,98.7 L 512.4,105.2 L 517.1,108.5 L 521.8,91.1 L 526.6,81.7 L 531.3,91.8 L 536.0,90.8 L 540.7,80.3 L 545.4,82.9 L 550.1,82.6 L 554.8,79.0 L 559.5,80.9 L 564.3,84.3 L 569.0,76.4 L 573.7,75.4 L 578.4,62.1 L 583.1,68.4 L 587.8,74.2 L 592.5,76.9 L 597.2,80.9 L 602.0,84.9 L 606.7,84.9 L 611.4,83.9 L 616.1,82.9 L 620.8,79.0 L 625.5,78.0 L 630.2,86.4 L 634.9,81.3 L 639.7,88.3 L 644.4,92.3 L 649.1,98.7 L 653.8,92.3 L 658.5,87.1 L 663.2,90.2 L 667.9,82.1 L 672.6,77.0 L 677.4,81.4 L 682.1,87.2 L 686.8,88.6 L 691.5,74.4 L 696.2,68.1 L 700.9,63.9 L 705.6,64.6 L 710.3,50.8 L 715.1,43.4 L 719.8,49.5 L 724.5,46.1 L 729.2,37.4 L 733.9,35.1 L 738.6,36.1 L 743.3,59.2 L 748.0,59.5 L 752.8,69.0 L 757.5,58.7 L 762.2,52.7 L 766.9,47.9 L 771.6,34.7 L 776.3,34.7 L 781.0,34.7 L 785.7,34.7 L 790.5,34.7 L 795.2,34.7 L 799.9,34.7 L 804.6,34.7 L 809.3,34.7 L 814.0,34.7 L 818.7,34.7 L 823.4,34.7 L 828.2,34.7 L 832.9,34.7 L 837.6,34.7 L 842.3,34.7 L 847.0,34.7 L 851.7,34.7 L 856.4,34.7 L 861.1,34.7 L 865.9,34.7 L 870.6,34.7 L 875.3,34.7 L 880.0,34.7 L 880.0,210 L 60,210 Z" fill="url(#botGrad)" />
+        <path d="M 60.0,197.8 L 64.7,197.8 L 69.4,197.8 L 74.1,197.8 L 78.9,197.8 L 83.6,197.8 L 88.3,180.5 L 93.0,197.8 L 97.7,180.5 L 102.4,197.8 L 107.1,197.8 L 111.8,197.8 L 116.6,197.8 L 121.3,197.8 L 126.0,197.8 L 130.7,197.8 L 135.4,197.8 L 140.1,197.8 L 144.8,197.8 L 149.5,180.5 L 154.3,197.8 L 159.0,197.8 L 163.7,197.8 L 168.4,180.5 L 173.1,180.5 L 177.8,197.8 L 182.5,180.5 L 187.2,180.5 L 192.0,197.8 L 196.7,180.5 L 201.4,197.8 L 206.1,197.8 L 210.8,180.5 L 215.5,197.8 L 220.2,197.8 L 224.9,197.8 L 229.7,197.8 L 234.4,197.8 L 239.1,197.8 L 243.8,197.8 L 248.5,197.8 L 253.2,197.8 L 257.9,180.5 L 262.6,197.8 L 267.4,197.8 L 272.1,180.5 L 276.8,197.8 L 281.5,180.5 L 286.2,197.8 L 290.9,197.8 L 295.6,180.5 L 300.3,180.5 L 305.1,197.5 L 309.8,197.5 L 314.5,197.5 L 319.2,197.5 L 323.9,180.5 L 328.6,197.5 L 333.3,197.5 L 338.0,180.5 L 342.8,180.5 L 347.5,180.5 L 352.2,197.5 L 356.9,197.5 L 361.6,197.5 L 366.3,197.5 L 371.0,197.5 L 375.7,197.5 L 380.5,197.5 L 385.2,197.5 L 389.9,197.5 L 394.6,180.5 L 399.3,180.5 L 404.0,197.5 L 408.7,180.5 L 413.4,197.5 L 418.2,197.9 L 422.9,197.9 L 427.6,180.5 L 432.3,180.5 L 437.0,197.9 L 441.7,197.1 L 446.4,197.1 L 451.1,197.1 L 455.9,197.1 L 460.6,197.1 L 465.3,180.5 L 470.0,197.1 L 474.7,197.1 L 479.4,197.1 L 484.1,180.5 L 488.9,196.9 L 493.6,196.9 L 498.3,196.9 L 503.0,196.9 L 507.7,196.9 L 512.4,196.9 L 517.1,196.9 L 521.8,180.5 L 526.6,180.5 L 531.3,180.5 L 536.0,197.5 L 540.7,180.5 L 545.4,197.5 L 550.1,197.5 L 554.8,197.5 L 559.5,197.5 L 564.3,197.5 L 569.0,180.5 L 573.7,197.5 L 578.4,180.5 L 583.1,197.5 L 587.8,180.5 L 592.5,197.4 L 597.2,197.4 L 602.0,197.4 L 606.7,197.4 L 611.4,197.4 L 616.1,197.4 L 620.8,197.4 L 625.5,197.4 L 630.2,197.4 L 634.9,180.5 L 639.7,199.5 L 644.4,199.5 L 649.1,199.5 L 653.8,180.5 L 658.5,180.5 L 663.2,199.5 L 667.9,180.5 L 672.6,180.5 L 677.4,198.6 L 682.1,180.5 L 686.8,180.5 L 691.5,180.5 L 696.2,180.5 L 700.9,198.6 L 705.6,180.5 L 710.3,180.5 L 715.1,180.5 L 719.8,180.5 L 724.5,180.5 L 729.2,180.5 L 733.9,180.5 L 738.6,180.5 L 743.3,180.5 L 748.0,180.5 L 752.8,180.5 L 757.5,180.5 L 762.2,180.5 L 766.9,180.5 L 771.6,180.5 L 776.3,180.5 L 781.0,180.5 L 785.7,180.5 L 790.5,180.5 L 795.2,180.5 L 799.9,180.5 L 804.6,180.5 L 809.3,180.5 L 814.0,180.5 L 818.7,180.5 L 823.4,180.5 L 828.2,180.5 L 832.9,180.5 L 837.6,180.5 L 842.3,180.5 L 847.0,180.5 L 851.7,180.5 L 856.4,180.5 L 861.1,180.5 L 865.9,180.5 L 870.6,180.5 L 875.3,180.5 L 880.0,180.5" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" />
+        <path d="M 60.0,197.8 L 64.7,197.6 L 69.4,195.2 L 74.1,196.7 L 78.9,198.1 L 83.6,199.8 L 88.3,193.5 L 93.0,197.8 L 97.7,197.9 L 102.4,200.2 L 107.1,203.8 L 111.8,203.6 L 116.6,200.7 L 121.3,199.2 L 126.0,196.2 L 130.7,198.1 L 135.4,197.7 L 140.1,199.1 L 144.8,201.1 L 149.5,194.2 L 154.3,196.0 L 159.0,187.8 L 163.7,190.7 L 168.4,190.8 L 173.1,189.3 L 177.8,189.1 L 182.5,184.0 L 187.2,178.2 L 192.0,178.5 L 196.7,172.6 L 201.4,173.7 L 206.1,175.8 L 210.8,169.4 L 215.5,171.4 L 220.2,170.2 L 224.9,171.8 L 229.7,171.3 L 234.4,174.0 L 239.1,176.2 L 243.8,177.1 L 248.5,177.6 L 253.2,179.8 L 257.9,173.9 L 262.6,173.8 L 267.4,175.5 L 272.1,166.2 L 276.8,168.3 L 281.5,163.8 L 286.2,166.0 L 290.9,170.2 L 295.6,168.3 L 300.3,156.3 L 305.1,158.5 L 309.8,165.4 L 314.5,168.4 L 319.2,171.7 L 323.9,188.3 L 328.6,188.9 L 333.3,191.4 L 338.0,185.9 L 342.8,179.3 L 347.5,177.2 L 352.2,177.6 L 356.9,177.0 L 361.6,176.3 L 366.3,176.8 L 371.0,179.0 L 375.7,177.8 L 380.5,180.3 L 385.2,175.8 L 389.9,177.7 L 394.6,173.7 L 399.3,168.1 L 404.0,167.2 L 408.7,168.0 L 413.4,169.7 L 418.2,170.6 L 422.9,170.2 L 427.6,144.7 L 432.3,130.8 L 437.0,130.3 L 441.7,133.4 L 446.4,136.1 L 451.1,139.9 L 455.9,140.9 L 460.6,143.0 L 465.3,92.5 L 470.0,92.6 L 474.7,92.2 L 479.4,94.1 L 484.1,77.9 L 488.9,82.1 L 493.6,88.0 L 498.3,91.0 L 503.0,96.4 L 507.7,98.7 L 512.4,105.2 L 517.1,108.5 L 521.8,91.1 L 526.6,81.7 L 531.3,91.8 L 536.0,90.8 L 540.7,80.3 L 545.4,82.9 L 550.1,82.6 L 554.8,79.0 L 559.5,80.9 L 564.3,84.3 L 569.0,76.4 L 573.7,75.4 L 578.4,62.1 L 583.1,68.4 L 587.8,74.2 L 592.5,76.9 L 597.2,80.9 L 602.0,84.9 L 606.7,84.9 L 611.4,83.9 L 616.1,82.9 L 620.8,79.0 L 625.5,78.0 L 630.2,86.4 L 634.9,81.3 L 639.7,88.3 L 644.4,92.3 L 649.1,98.7 L 653.8,92.3 L 658.5,87.1 L 663.2,90.2 L 667.9,82.1 L 672.6,77.0 L 677.4,81.4 L 682.1,87.2 L 686.8,88.6 L 691.5,74.4 L 696.2,68.1 L 700.9,63.9 L 705.6,64.6 L 710.3,50.8 L 715.1,43.4 L 719.8,49.5 L 724.5,46.1 L 729.2,37.4 L 733.9,35.1 L 738.6,36.1 L 743.3,59.2 L 748.0,59.5 L 752.8,69.0 L 757.5,58.7 L 762.2,52.7 L 766.9,47.9 L 771.6,34.7 L 776.3,34.7 L 781.0,34.7 L 785.7,34.7 L 790.5,34.7 L 795.2,34.7 L 799.9,34.7 L 804.6,34.7 L 809.3,34.7 L 814.0,34.7 L 818.7,34.7 L 823.4,34.7 L 828.2,34.7 L 832.9,34.7 L 837.6,34.7 L 842.3,34.7 L 847.0,34.7 L 851.7,34.7 L 856.4,34.7 L 861.1,34.7 L 865.9,34.7 L 870.6,34.7 L 875.3,34.7 L 880.0,34.7" fill="none" stroke="#38bdf8" stroke-width="3" />
+        <circle cx="880.0" cy="34.7" r="5" fill="#38bdf8" stroke="#fff" stroke-width="2" />
+        <text x="60" y="232" fill="#94a3b8" font-size="11">Start (Trade #1)</text>
+        <text x="880" y="232" fill="#94a3b8" font-size="11" text-anchor="end">Trade #175</text>
+    </svg>
+    
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">🛡️ Underwater Drawdown Profile</div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> Max DD: -20.45%</div>
+                    </div>
+                </div>
+                
+    <svg viewBox="0 0 900 140" class="chart-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ef4444" stop-opacity="0.0"/>
+                <stop offset="100%" stop-color="#ef4444" stop-opacity="0.4"/>
+            </linearGradient>
+        </defs>
+        <line x1="60" y1="20" x2="880" y2="20" stroke="#475569" stroke-width="1.5" />
+        <text x="52" y="24" fill="#94a3b8" font-size="11" text-anchor="end">0.0%</text>
+        <line x1="60" y1="110" x2="880" y2="110" stroke="#334155" stroke-dasharray="3,3" />
+        <text x="52" y="114" fill="#94a3b8" font-size="11" text-anchor="end">-22.5%</text>
+        <path d="M 60.0,20.0 L 64.7,20.0 L 69.4,20.0 L 74.1,24.7 L 78.9,28.8 L 83.6,34.1 L 88.3,20.0 L 93.0,32.9 L 97.7,33.0 L 102.4,39.9 L 107.1,50.6 L 111.8,50.0 L 116.6,41.4 L 121.3,37.0 L 126.0,28.0 L 130.7,33.5 L 135.4,32.5 L 140.1,36.6 L 144.8,42.5 L 149.5,21.9 L 154.3,27.3 L 159.0,20.0 L 163.7,28.2 L 168.4,28.5 L 173.1,24.2 L 177.8,23.6 L 182.5,20.0 L 187.2,20.0 L 192.0,20.6 L 196.7,20.0 L 201.4,22.8 L 206.1,28.0 L 210.8,20.0 L 215.5,24.9 L 220.2,22.1 L 224.9,26.1 L 229.7,24.9 L 234.4,31.5 L 239.1,37.2 L 243.8,39.4 L 248.5,40.8 L 253.2,46.3 L 257.9,31.2 L 262.6,31.2 L 267.4,35.4 L 272.1,20.0 L 276.8,25.1 L 281.5,20.0 L 286.2,25.4 L 290.9,35.7 L 295.6,31.0 L 300.3,20.0 L 305.1,25.1 L 309.8,41.4 L 314.5,48.4 L 319.2,56.0 L 323.9,94.7 L 328.6,96.2 L 333.3,101.8 L 338.0,89.0 L 342.8,73.7 L 347.5,68.8 L 352.2,69.7 L 356.9,68.4 L 361.6,66.7 L 366.3,67.9 L 371.0,73.0 L 375.7,70.2 L 380.5,76.0 L 385.2,65.6 L 389.9,69.9 L 394.6,60.6 L 399.3,47.5 L 404.0,45.5 L 408.7,47.4 L 413.4,51.4 L 418.2,53.4 L 422.9,52.5 L 427.6,20.0 L 432.3,20.0 L 437.0,20.0 L 441.7,26.3 L 446.4,31.8 L 451.1,39.4 L 455.9,41.5 L 460.6,45.6 L 465.3,20.0 L 470.0,20.1 L 474.7,20.0 L 479.4,23.2 L 484.1,20.0 L 488.9,26.8 L 493.6,36.2 L 498.3,41.0 L 503.0,49.6 L 507.7,53.3 L 512.4,63.7 L 517.1,69.0 L 521.8,41.1 L 526.6,26.0 L 531.3,42.2 L 536.0,40.6 L 540.7,23.8 L 545.4,28.0 L 550.1,27.6 L 554.8,21.8 L 559.5,24.8 L 564.3,30.2 L 569.0,20.0 L 573.7,20.0 L 578.4,20.0 L 583.1,29.4 L 587.8,38.3 L 592.5,42.3 L 597.2,48.3 L 602.0,54.2 L 606.7,54.4 L 611.4,52.8 L 616.1,51.3 L 620.8,45.4 L 625.5,43.9 L 630.2,56.6 L 634.9,48.9 L 639.7,59.5 L 644.4,65.4 L 649.1,75.0 L 653.8,65.4 L 658.5,57.6 L 663.2,62.3 L 667.9,50.1 L 672.6,42.4 L 677.4,49.1 L 682.1,57.7 L 686.8,59.8 L 691.5,38.5 L 696.2,29.0 L 700.9,22.7 L 705.6,23.7 L 710.3,20.0 L 715.1,20.0 L 719.8,28.5 L 724.5,23.8 L 729.2,20.0 L 733.9,20.0 L 738.6,21.4 L 743.3,53.0 L 748.0,53.4 L 752.8,66.3 L 757.5,52.3 L 762.2,44.1 L 766.9,37.6 L 771.6,20.0 L 776.3,20.0 L 781.0,20.0 L 785.7,20.0 L 790.5,20.0 L 795.2,20.0 L 799.9,20.0 L 804.6,20.0 L 809.3,20.0 L 814.0,20.0 L 818.7,20.0 L 823.4,20.0 L 828.2,20.0 L 832.9,20.0 L 837.6,20.0 L 842.3,20.0 L 847.0,20.0 L 851.7,20.0 L 856.4,20.0 L 861.1,20.0 L 865.9,20.0 L 870.6,20.0 L 875.3,20.0 L 880.0,20.0 L 880.0,20 L 60,20 Z" fill="url(#ddGrad)" />
+        <path d="M 60.0,20.0 L 64.7,20.0 L 69.4,20.0 L 74.1,24.7 L 78.9,28.8 L 83.6,34.1 L 88.3,20.0 L 93.0,32.9 L 97.7,33.0 L 102.4,39.9 L 107.1,50.6 L 111.8,50.0 L 116.6,41.4 L 121.3,37.0 L 126.0,28.0 L 130.7,33.5 L 135.4,32.5 L 140.1,36.6 L 144.8,42.5 L 149.5,21.9 L 154.3,27.3 L 159.0,20.0 L 163.7,28.2 L 168.4,28.5 L 173.1,24.2 L 177.8,23.6 L 182.5,20.0 L 187.2,20.0 L 192.0,20.6 L 196.7,20.0 L 201.4,22.8 L 206.1,28.0 L 210.8,20.0 L 215.5,24.9 L 220.2,22.1 L 224.9,26.1 L 229.7,24.9 L 234.4,31.5 L 239.1,37.2 L 243.8,39.4 L 248.5,40.8 L 253.2,46.3 L 257.9,31.2 L 262.6,31.2 L 267.4,35.4 L 272.1,20.0 L 276.8,25.1 L 281.5,20.0 L 286.2,25.4 L 290.9,35.7 L 295.6,31.0 L 300.3,20.0 L 305.1,25.1 L 309.8,41.4 L 314.5,48.4 L 319.2,56.0 L 323.9,94.7 L 328.6,96.2 L 333.3,101.8 L 338.0,89.0 L 342.8,73.7 L 347.5,68.8 L 352.2,69.7 L 356.9,68.4 L 361.6,66.7 L 366.3,67.9 L 371.0,73.0 L 375.7,70.2 L 380.5,76.0 L 385.2,65.6 L 389.9,69.9 L 394.6,60.6 L 399.3,47.5 L 404.0,45.5 L 408.7,47.4 L 413.4,51.4 L 418.2,53.4 L 422.9,52.5 L 427.6,20.0 L 432.3,20.0 L 437.0,20.0 L 441.7,26.3 L 446.4,31.8 L 451.1,39.4 L 455.9,41.5 L 460.6,45.6 L 465.3,20.0 L 470.0,20.1 L 474.7,20.0 L 479.4,23.2 L 484.1,20.0 L 488.9,26.8 L 493.6,36.2 L 498.3,41.0 L 503.0,49.6 L 507.7,53.3 L 512.4,63.7 L 517.1,69.0 L 521.8,41.1 L 526.6,26.0 L 531.3,42.2 L 536.0,40.6 L 540.7,23.8 L 545.4,28.0 L 550.1,27.6 L 554.8,21.8 L 559.5,24.8 L 564.3,30.2 L 569.0,20.0 L 573.7,20.0 L 578.4,20.0 L 583.1,29.4 L 587.8,38.3 L 592.5,42.3 L 597.2,48.3 L 602.0,54.2 L 606.7,54.4 L 611.4,52.8 L 616.1,51.3 L 620.8,45.4 L 625.5,43.9 L 630.2,56.6 L 634.9,48.9 L 639.7,59.5 L 644.4,65.4 L 649.1,75.0 L 653.8,65.4 L 658.5,57.6 L 663.2,62.3 L 667.9,50.1 L 672.6,42.4 L 677.4,49.1 L 682.1,57.7 L 686.8,59.8 L 691.5,38.5 L 696.2,29.0 L 700.9,22.7 L 705.6,23.7 L 710.3,20.0 L 715.1,20.0 L 719.8,28.5 L 724.5,23.8 L 729.2,20.0 L 733.9,20.0 L 738.6,21.4 L 743.3,53.0 L 748.0,53.4 L 752.8,66.3 L 757.5,52.3 L 762.2,44.1 L 766.9,37.6 L 771.6,20.0 L 776.3,20.0 L 781.0,20.0 L 785.7,20.0 L 790.5,20.0 L 795.2,20.0 L 799.9,20.0 L 804.6,20.0 L 809.3,20.0 L 814.0,20.0 L 818.7,20.0 L 823.4,20.0 L 828.2,20.0 L 832.9,20.0 L 837.6,20.0 L 842.3,20.0 L 847.0,20.0 L 851.7,20.0 L 856.4,20.0 L 861.1,20.0 L 865.9,20.0 L 870.6,20.0 L 875.3,20.0 L 880.0,20.0" fill="none" stroke="#ef4444" stroke-width="2" />
+        <text x="60" y="134" fill="#94a3b8" font-size="11">Start</text>
+        <text x="880" y="134" fill="#94a3b8" font-size="11" text-anchor="end">Current</text>
+    </svg>
+    
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">
+                    Avg Drawdown Depth: <strong>-5.99%</strong> &bull; Max Recovery Span: <strong>27 trades</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 1: CAPITAL & RETURN KPIS -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="capital">
+            <div>
+                <div class="section-title">📊 1. Capital Growth & Return Metrics</div>
+                <div class="section-desc">Evaluates cumulative gains, compounding velocity, and benchmark outperformance.</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 24%;">Metric & Formula</th>
+                    <th style="width: 14%;">Strategy Bot</th>
+                    <th style="width: 14%;">S&P 500 (SPY)</th>
+                    <th style="width: 18%;">Status / Health</th>
+                    <th style="width: 30%;">Meaning & Desirable Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Compound Annual Growth (CAGR)</span>
+                        <span class="kpi-formula">(1 + Total_Return)^(1/Years) - 1</span>
+                    </td>
+                    <td><strong class="pos" style="font-size: 1.1rem;">+259.44%</strong></td>
+                    <td>+21.68%</td>
+                    <td><span class="badge-pill badge-green">🟢 Active: +237.76%</span></td>
+                    <td>
+                        <div class="kpi-meaning">The annualized geometric rate of return, factoring in the effect of compounding over time.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 15-20% annualized (and consistently above SPY CAGR).</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Cumulative Total Return</span>
+                        <span class="kpi-formula">(End_Balance - Start_Balance) / Start_Balance</span>
+                    </td>
+                    <td><strong class="pos">+125.38%</strong></td>
+                    <td>+13.27%</td>
+                    <td><span class="badge-pill badge-green">🟢 Outperforming</span></td>
+                    <td>
+                        <div class="kpi-meaning">Total percentage profit generated by the portfolio from inception to date.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Positive, and higher than SPY Buy & Hold over identical timeframe.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Net Dollar Profit</span>
+                        <span class="kpi-formula">End_Equity - Start_Capital</span>
+                    </td>
+                    <td><strong class="pos">$+12,538.38</strong></td>
+                    <td>$+1,327.30</td>
+                    <td><span class="badge-pill badge-green">Spread: $+11,211.08</span></td>
+                    <td>
+                        <div class="kpi-meaning">Total absolute dollar profit earned after all realized gains and unrealized open floating mark-to-market.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Maximizing net profits while containing portfolio drawdown.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Peak Equity (High Water Mark)</span>
+                        <span class="kpi-formula">max(Equity_0, Equity_1, ... Equity_t)</span>
+                    </td>
+                    <td><strong>$22,538.38</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-blue">Peak Capital</span></td>
+                    <td>
+                        <div class="kpi-meaning">The highest recorded account balance achieved during the entire lifetime of the strategy.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Steadily rising high water marks with short recovery times.</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 2: TRADE EXECUTION & WIN/LOSS PROFILE -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="trade-profile">
+            <div>
+                <div class="section-title">🎯 2. Trade Execution & Quality Profile</div>
+                <div class="section-desc">Measures individual trade edge, win/loss asymmetry, payoff ratio, and streaks.</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 24%;">Metric & Formula</th>
+                    <th style="width: 14%;">Strategy Bot</th>
+                    <th style="width: 14%;">Benchmark / Ref</th>
+                    <th style="width: 18%;">Status / Health</th>
+                    <th style="width: 30%;">Meaning & Desirable Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Win Rate (%)</span>
+                        <span class="kpi-formula">Winning_Trades / Total_Trades</span>
+                    </td>
+                    <td><strong>40.80%</strong> (71 of 174)</td>
+                    <td>50.0% (Coin flip)</td>
+                    <td><span class="badge-pill badge-amber">40.80%</span></td>
+                    <td>
+                        <div class="kpi-meaning">Percentage of total completed and active trades that yielded a positive return.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 50% for trend/swing trading, or > 40% if Payoff Ratio is > 2.0x.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Payoff Ratio (Win/Loss)</span>
+                        <span class="kpi-formula">Avg_Win_% / |Avg_Loss_%|</span>
+                    </td>
+                    <td><strong class="pos" style="font-size: 1.1rem;">2.01x</strong></td>
+                    <td>1.00x</td>
+                    <td><span class="badge-pill badge-green">> 1.5x Good</span></td>
+                    <td>
+                        <div class="kpi-meaning">Ratio of the average gain on winning trades (+15.71%) to the average loss on losing trades (-7.83%).</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 1.5x to 2.5x (allows profitability even with sub-50% win rates).</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Profit Factor</span>
+                        <span class="kpi-formula">Gross_Gains_$ / Gross_Losses_$</span>
+                    </td>
+                    <td><strong>1.62</strong></td>
+                    <td>1.00</td>
+                    <td><span class="badge-pill badge-green">🟢 Great (> 1.5)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Total gross dollar profits divided by total gross dollar losses across all trades.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 1.50 is good, > 2.00 is institutional-grade. (< 1.00 is losing).</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Mathematical Expectancy</span>
+                        <span class="kpi-formula">(Win% * AvgWin) - (Loss% * AvgLoss)</span>
+                    </td>
+                    <td><strong class="pos">+2.63%</strong> ($+72.06)</td>
+                    <td>$0.00</td>
+                    <td><span class="badge-pill badge-green">🟢 Positive Edge</span></td>
+                    <td>
+                        <div class="kpi-meaning">The expected mathematical dollar and percentage gain generated per trade executed.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Positive value (> +1.0% per trade). Fundamental prerequisite for long-term growth.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Long vs Short Win Rates</span>
+                        <span class="kpi-formula">Long_Wins/Longs vs Short_Wins/Shorts</span>
+                    </td>
+                    <td>Long: <strong>49.06%</strong> | Short: <strong>27.94%</strong></td>
+                    <td>Long: 106 | Short: 68</td>
+                    <td><span class="badge-pill badge-blue">Breakdown</span></td>
+                    <td>
+                        <div class="kpi-meaning">Separates directional model performance on long positions versus short positions.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Balanced accuracy across both long and short regimes.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Consecutive Streaks</span>
+                        <span class="kpi-formula">Max Consecutive Wins / Losses</span>
+                    </td>
+                    <td>Wins: <strong>4</strong> | Losses: <strong>7</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-amber">Streak Profile</span></td>
+                    <td>
+                        <div class="kpi-meaning">Longest continuous winning streak vs longest continuous losing streak.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Losing streaks should not exceed risk tolerance or trigger margin calls.</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 3: RISK, VOLATILITY & TAIL METRICS -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="risk-drawdown">
+            <div>
+                <div class="section-title">🛡️ 3. Risk, Volatility & Tail Metrics</div>
+                <div class="section-desc">Measures drawdown depth, downside deviation, Value at Risk, and distribution tail risks.</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 24%;">Metric & Formula</th>
+                    <th style="width: 14%;">Strategy Bot</th>
+                    <th style="width: 14%;">S&P 500 (SPY)</th>
+                    <th style="width: 18%;">Status / Health</th>
+                    <th style="width: 30%;">Meaning & Desirable Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Maximum Drawdown (MDD)</span>
+                        <span class="kpi-formula">min((Equity_t - Peak_t) / Peak_t)</span>
+                    </td>
+                    <td><strong class="neg">-20.45%</strong></td>
+                    <td>-33.72%</td>
+                    <td><span class="badge-pill badge-amber">🟡 Moderate Risk (15-25%)</span></td>
+                    <td>
+                        <div class="kpi-meaning">The maximum peak-to-trough drop in account equity experienced before a new high is reached.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Lower magnitude than benchmark (< -15% to -20% is considered safe).</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Annualized Volatility (σ)</span>
+                        <span class="kpi-formula">std(returns) * sqrt(steps_per_year)</span>
+                    </td>
+                    <td><strong>58.27%</strong></td>
+                    <td>17.97%</td>
+                    <td><span class="badge-pill badge-blue">Dispersion</span></td>
+                    <td>
+                        <div class="kpi-meaning">The standard deviation of annualized returns, measuring total variability and price fluctuation.</div>
+                        <div class="kpi-desirable">🎯 Desirable: 10% - 25% for moderate risk strategies; should be compensated by high return.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Downside Deviation (σ_down)</span>
+                        <span class="kpi-formula">sqrt(mean(min(r - rf, 0)^2)) * sqrt(K)</span>
+                    </td>
+                    <td><strong>25.42%</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-green">Downside Only</span></td>
+                    <td>
+                        <div class="kpi-meaning">Measures volatility of negative returns only below the risk-free rate, ignoring upside volatility.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Significantly lower than total volatility, proving upside asymmetry.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Historical Value at Risk (95% VaR)</span>
+                        <span class="kpi-formula">5th Percentile of Trade Return</span>
+                    </td>
+                    <td><strong>-2.82%</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-amber">1-in-20 Risk</span></td>
+                    <td>
+                        <div class="kpi-meaning">In 95% of trades, losses will not exceed this threshold on a per-step basis.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Controlled loss ceiling (< -3.0% per portfolio step).</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Conditional VaR (CVaR / Expected Shortfall)</span>
+                        <span class="kpi-formula">mean(r | r <= 95% VaR)</span>
+                    </td>
+                    <td><strong class="neg">-4.73%</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-red">Tail Risk</span></td>
+                    <td>
+                        <div class="kpi-meaning">The expected average loss when a severe tail event worse than the 95% VaR cutoff occurs.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Bounded tail risk without catastrophic blowups.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Return Skewness & Kurtosis</span>
+                        <span class="kpi-formula">Skew: E[(r-μ)^3]/σ^3 | Kurt: E[(r-μ)^4]/σ^4 - 3</span>
+                    </td>
+                    <td>Skew: <strong>3.06</strong> | Kurt: <strong>20.24</strong></td>
+                    <td>Normal: (0.0, 0.0)</td>
+                    <td><span class="badge-pill badge-blue">Right Skew (+3.06)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Positive skew (>0) indicates frequent small losses with occasional huge outsized wins. Kurtosis measures fat tails.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Positive Skew (> 0) is ideal for trend followers.</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 4: RISK-ADJUSTED RETURN RATIOS -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="ratios">
+            <div>
+                <div class="section-title">⚖️ 4. Risk-Adjusted Performance Ratios</div>
+                <div class="section-desc">Quantifies how much return the strategy generates per unit of risk taken.</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 24%;">Ratio & Formula</th>
+                    <th style="width: 14%;">Strategy Bot</th>
+                    <th style="width: 14%;">S&P 500 (SPY)</th>
+                    <th style="width: 18%;">Status / Health</th>
+                    <th style="width: 30%;">Meaning & Desirable Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Sharpe Ratio (Annualized)</span>
+                        <span class="kpi-formula">(CAGR - Rf) / Annualized_Vol</span>
+                    </td>
+                    <td><strong class="pos" style="font-size: 1.15rem;">4.37</strong></td>
+                    <td>0.96</td>
+                    <td><span class="badge-pill badge-green">🟢 Excellent (> 2.0)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Measures excess return earned above the risk-free rate per unit of total return volatility.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 1.0 is good, > 2.0 is very good, > 3.0 is elite.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Sortino Ratio (Downside)</span>
+                        <span class="kpi-formula">(CAGR - Rf) / Downside_Deviation</span>
+                    </td>
+                    <td><strong class="pos" style="font-size: 1.15rem;">10.03</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-green">🟢 Elite (> 3.0)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Like Sharpe ratio, but only penalizes harmful downside volatility rather than upward volatility.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 1.5 is good, > 3.0 is outstanding.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Calmar Ratio</span>
+                        <span class="kpi-formula">CAGR / |Maximum_Drawdown|</span>
+                    </td>
+                    <td><strong>12.69</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-green">🟢 Great (> 3.0)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Measures annualized return relative to the worst historical maximum drawdown.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 1.0 is acceptable, > 3.0 is top tier.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Omega Ratio</span>
+                        <span class="kpi-formula">Sum(Gains > Rf) / Sum(|Losses < Rf|)</span>
+                    </td>
+                    <td><strong>1.67</strong></td>
+                    <td>1.00</td>
+                    <td><span class="badge-pill badge-green">🟢 Edge > 1.0</span></td>
+                    <td>
+                        <div class="kpi-meaning">Probability-weighted ratio of gains versus losses thresholded at the risk-free rate.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 1.0 denotes positive expectancy; > 1.5 indicates strong compounding advantage.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Information Ratio (vs SPY)</span>
+                        <span class="kpi-formula">Active_CAGR / Tracking_Error</span>
+                    </td>
+                    <td><strong>16.60</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-green">🟢 Elite (> 1.0)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Measures strategy consistency in generating excess returns over the benchmark.</div>
+                        <div class="kpi-desirable">🎯 Desirable: > 0.5 is good, > 1.0 is exceptional.</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 5: BENCHMARK (SPY) & CAPM FACTOR ATTRIBUTION -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="capm">
+            <div>
+                <div class="section-title">📈 5. Benchmark (SPY) Factor Attribution & CAPM</div>
+                <div class="section-desc">Decomposes returns into systematic market exposure (Beta) versus genuine manager skill (Alpha).</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 24%;">Factor Metric & Formula</th>
+                    <th style="width: 14%;">Estimate</th>
+                    <th style="width: 14%;">Test Stat / P-Val</th>
+                    <th style="width: 18%;">Status / Health</th>
+                    <th style="width: 30%;">Meaning & Desirable Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Beta (β to SPY)</span>
+                        <span class="kpi-formula">Cov(R_bot, R_spy) / Var(R_spy)</span>
+                    </td>
+                    <td><strong>0.08</strong></td>
+                    <td>SE=0.04 (p=0.064)</td>
+                    <td><span class="badge-pill badge-blue">🟢 Low Beta / Uncorrelated</span></td>
+                    <td>
+                        <div class="kpi-meaning">Sensitivity of strategy returns to broader market movements (1.0 = moves with SPY, 0 = uncorrelated).</div>
+                        <div class="kpi-desirable">🎯 Desirable: Low beta (0.0 - 0.5) proves strategy is not simply taking leveraged market beta.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Annualized Jensen's Alpha (α)</span>
+                        <span class="kpi-formula">R_bot - (Rf + β * (R_spy - Rf))</span>
+                    </td>
+                    <td><strong>-3.12%</strong></td>
+                    <td>t=-1.88 (p=0.062)</td>
+                    <td><span class="badge-pill badge-amber">-3.12%</span></td>
+                    <td>
+                        <div class="kpi-meaning">Risk-adjusted return generated above and beyond what the CAPM model predicts for the beta risk taken.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Positive (> 0%) with statistical significance (p < 0.05).</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Correlation (r) & R-Squared (R²)</span>
+                        <span class="kpi-formula">Pearson r | R² = r^2</span>
+                    </td>
+                    <td>r = <strong>0.14</strong> | R² = <strong>1.98%</strong></td>
+                    <td>-</td>
+                    <td><span class="badge-pill badge-blue">Independent Return Driver</span></td>
+                    <td>
+                        <div class="kpi-meaning">R² represents the proportion of strategy variance explained by the S&P 500.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Low R² (< 20%) indicates true diversification from standard index funds.</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 6: STATISTICAL SIGNIFICANCE & HYPOTHESIS TESTING -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="stats-tests">
+            <div>
+                <div class="section-title">🔬 6. Statistical Significance & Hypothesis Testing</div>
+                <div class="section-desc">Hypothesis tests validating whether performance represents true quantitative skill or random luck.</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 24%;">Statistical Test</th>
+                    <th style="width: 14%;">Sample Statistic</th>
+                    <th style="width: 14%;">P-Value</th>
+                    <th style="width: 18%;">Verdict (α = 0.05)</th>
+                    <th style="width: 30%;">Meaning & Desirable Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Trade Return T-Test</span>
+                        <span class="kpi-formula">H0: μ ≤ 0 (No positive edge)</span>
+                    </td>
+                    <td><strong>t = +1.970</strong></td>
+                    <td><strong>p = 0.0252</strong> (1-tail)</td>
+                    <td><span class="badge-pill badge-green">🟢 Statistically Proven (p < 0.05)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Tests whether the strategy's mean trade return is statistically significantly greater than zero.</div>
+                        <div class="kpi-desirable">🎯 Desirable: p < 0.05 (rejects the null hypothesis of zero edge with 95% confidence).</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">95% Confidence Interval for Mean Return</span>
+                        <span class="kpi-formula">x̄ ± t_crit * (s / sqrt(n))</span>
+                    </td>
+                    <td><strong>[-0.01%, +5.26%]</strong></td>
+                    <td>95% Confidence</td>
+                    <td><span class="badge-pill badge-blue">True Mean Bounds</span></td>
+                    <td>
+                        <div class="kpi-meaning">The statistical range where the true average trade return lies with 95% certainty.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Lower bound above 0.0% confirms positive edge.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Probabilistic Sharpe Ratio (PSR)</span>
+                        <span class="kpi-formula">López de Prado (2012) Formula</span>
+                    </td>
+                    <td><strong class="pos" style="font-size: 1.15rem;">99.0%</strong></td>
+                    <td>Target SR > 0</td>
+                    <td><span class="badge-pill badge-green">🟢 High Confidence (≥ 95%)</span></td>
+                    <td>
+                        <div class="kpi-meaning">Calculates the probability that the true Sharpe Ratio is > 0, adjusted for sample size, skewness, and fat tails.</div>
+                        <div class="kpi-desirable">🎯 Desirable: PSR ≥ 95% for institutional deployment.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Min Track Record Length (MinTRL)</span>
+                        <span class="kpi-formula">Trades needed for 95% confidence</span>
+                    </td>
+                    <td><strong>89 trades</strong></td>
+                    <td>Current: 174 trades</td>
+                    <td><span class="badge-pill badge-green">🟢 Track Record Sufficient</span></td>
+                    <td>
+                        <div class="kpi-meaning">The minimum number of trades required to statistically prove the observed Sharpe Ratio at 95% confidence.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Current trade sample > MinTRL.</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 7: KELLY CRITERION & POSITION SIZING -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="kelly">
+            <div>
+                <div class="section-title">📐 7. Optimal Position Sizing & Kelly Criterion</div>
+                <div class="section-desc">Calculates mathematical bankroll allocation to maximize geometric growth while avoiding ruin.</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 24%;">Sizing Model</th>
+                    <th style="width: 14%;">Optimal Fraction</th>
+                    <th style="width: 14%;">Current Setting</th>
+                    <th style="width: 18%;">Status / Diagnosis</th>
+                    <th style="width: 30%;">Meaning & Recommendation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Full Kelly Criterion (K*)</span>
+                        <span class="kpi-formula">K* = W - (1 - W) / R</span>
+                    </td>
+                    <td><strong>+11.29%</strong></td>
+                    <td>20.0%</td>
+                    <td><span class="badge-pill badge-red">🔴 Over-Betting Danger</span></td>
+                    <td>
+                        <div class="kpi-meaning">The theoretically optimal percentage of bankroll to bet per trade to maximize long-term wealth.</div>
+                        <div class="kpi-desirable">🎯 Desirable: Betting higher than Full Kelly leads to lower returns and high risk of ruin.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="kpi-name">Recommended Half-Kelly</span>
+                        <span class="kpi-formula">Half-Kelly = K* / 2</span>
+                    </td>
+                    <td><strong class="pos">+5.64%</strong></td>
+                    <td>20.0%</td>
+                    <td><span class="badge-pill badge-amber">Institutional Standard</span></td>
+                    <td>
+                        <div class="kpi-meaning">Hedge fund best practice to hedge against estimation errors in win rate and payoff.</div>
+                        <div class="kpi-desirable">🎯 Recommendation: Reduce position size from 20% to ~5.6% - 11% for optimal risk-adjusted stability.</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 8: COMPLETE TRADE AUDIT LOG -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="trade-log">
+            <div>
+                <div class="section-title">📋 8. Complete Trade Audit Log (174 Trades)</div>
+                <div class="section-desc">Search and filter every trade executed in the timeline.</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <input type="text" id="tradeSearch" class="search-input" placeholder="🔍 Search ticker (e.g. NVDA, AMD) or date..." onkeyup="filterTrades()">
+            <button class="btn-filter active" onclick="setFilter('ALL', this)">All (174)</button>
+            <button class="btn-filter" onclick="setFilter('WIN', this)">Wins (71)</button>
+            <button class="btn-filter" onclick="setFilter('LOSS', this)">Losses (84)</button>
+            <button class="btn-filter" onclick="setFilter('LONG', this)">Longs (106)</button>
+            <button class="btn-filter" onclick="setFilter('SHORT', this)">Shorts (68)</button>
+            <button class="btn-filter" onclick="setFilter('OPEN', this)">Open (65)</button>
+            <button class="btn-filter" onclick="setFilter('CLOSED', this)">Closed (109)</button>
+        </div>
+
+        <table class="kpi-table" id="tradesTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Ticker</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Entry Price</th>
+                    <th>Exit / Current</th>
+                    <th>PnL %</th>
+                    <th>Profit ($)</th>
+                    <th>Account Balance</th>
+                    <th>Holding</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">1</td>
+            <td>2025-12-25</td>
+            <td><strong>GOOG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$315.67</td>
+            <td>$317.56</td>
+            <td class='pos'><strong>+0.60%</strong></td>
+            <td class='pos'>$+11.97</td>
+            <td><strong>$10,011.97</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">2</td>
+            <td>2025-12-25</td>
+            <td><strong>HD</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$347.34</td>
+            <td>$379.59</td>
+            <td class='pos'><strong>+9.28%</strong></td>
+            <td class='pos'>$+185.92</td>
+            <td><strong>$10,197.89</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">3</td>
+            <td>2025-12-25</td>
+            <td><strong>LOW</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$243.00</td>
+            <td>$257.15</td>
+            <td class='neg'><strong>-5.82%</strong></td>
+            <td class='neg'>$-118.77</td>
+            <td><strong>$10,079.13</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">4</td>
+            <td>2025-12-25</td>
+            <td><strong>SBUX</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$84.57</td>
+            <td>$88.99</td>
+            <td class='neg'><strong>-5.23%</strong></td>
+            <td class='neg'>$-105.36</td>
+            <td><strong>$9,973.77</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">5</td>
+            <td>2025-12-25</td>
+            <td><strong>MCD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$313.33</td>
+            <td>$334.39</td>
+            <td class='neg'><strong>-6.72%</strong></td>
+            <td class='neg'>$-134.07</td>
+            <td><strong>$9,839.70</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">6</td>
+            <td>2025-12-25</td>
+            <td><strong>KO</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$70.11</td>
+            <td>$87.42</td>
+            <td class='pos'><strong>+24.69%</strong></td>
+            <td class='pos'>$+485.88</td>
+            <td><strong>$10,325.58</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">7</td>
+            <td>2025-12-25</td>
+            <td><strong>PEP</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$143.74</td>
+            <td>$166.86</td>
+            <td class='neg'><strong>-16.08%</strong></td>
+            <td class='neg'>$-332.17</td>
+            <td><strong>$9,993.41</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">8</td>
+            <td>2025-12-25</td>
+            <td><strong>PG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$144.49</td>
+            <td>$144.26</td>
+            <td class='neg'><strong>-0.16%</strong></td>
+            <td class='neg'>$-3.18</td>
+            <td><strong>$9,990.23</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">9</td>
+            <td>2025-12-25</td>
+            <td><strong>XOM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$119.22</td>
+            <td>$129.89</td>
+            <td class='neg'><strong>-8.95%</strong></td>
+            <td class='neg'>$-178.82</td>
+            <td><strong>$9,811.41</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">10</td>
+            <td>2025-12-25</td>
+            <td><strong>SLB</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$37.97</td>
+            <td>$43.31</td>
+            <td class='neg'><strong>-14.06%</strong></td>
+            <td class='neg'>$-275.97</td>
+            <td><strong>$9,535.44</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">11</td>
+            <td>2025-12-25</td>
+            <td><strong>GE</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$316.75</td>
+            <td>$314.02</td>
+            <td class='pos'><strong>+0.86%</strong></td>
+            <td class='pos'>$+16.44</td>
+            <td><strong>$9,551.88</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">12</td>
+            <td>2025-12-25</td>
+            <td><strong>WMT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$111.61</td>
+            <td>$124.51</td>
+            <td class='pos'><strong>+11.56%</strong></td>
+            <td class='pos'>$+220.89</td>
+            <td><strong>$9,772.76</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">13</td>
+            <td>2025-12-25</td>
+            <td><strong>CAT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$583.76</td>
+            <td>$617.62</td>
+            <td class='pos'><strong>+5.80%</strong></td>
+            <td class='pos'>$+113.37</td>
+            <td><strong>$9,886.13</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">14</td>
+            <td>2025-12-25</td>
+            <td><strong>LMT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$485.75</td>
+            <td>$542.92</td>
+            <td class='pos'><strong>+11.77%</strong></td>
+            <td class='pos'>$+232.71</td>
+            <td><strong>$10,118.84</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">15</td>
+            <td>2025-12-25</td>
+            <td><strong>UPS</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$100.66</td>
+            <td>$107.71</td>
+            <td class='neg'><strong>-7.00%</strong></td>
+            <td class='neg'>$-141.74</td>
+            <td><strong>$9,977.10</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">16</td>
+            <td>2025-12-25</td>
+            <td><strong>LLY</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$1076.98</td>
+            <td>$1063.56</td>
+            <td class='pos'><strong>+1.25%</strong></td>
+            <td class='pos'>$+24.86</td>
+            <td><strong>$10,001.97</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">17</td>
+            <td>2025-12-25</td>
+            <td><strong>JNJ</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$207.78</td>
+            <td>$218.66</td>
+            <td class='neg'><strong>-5.24%</strong></td>
+            <td class='neg'>$-104.75</td>
+            <td><strong>$9,897.22</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">18</td>
+            <td>2025-12-25</td>
+            <td><strong>PFE</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$25.03</td>
+            <td>$26.97</td>
+            <td class='neg'><strong>-7.73%</strong></td>
+            <td class='neg'>$-153.03</td>
+            <td><strong>$9,744.19</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">19</td>
+            <td>2025-12-25</td>
+            <td><strong>MRK</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$106.45</td>
+            <td>$135.55</td>
+            <td class='pos'><strong>+27.34%</strong></td>
+            <td class='pos'>$+532.75</td>
+            <td><strong>$10,276.94</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">20</td>
+            <td>2025-12-25</td>
+            <td><strong>ABBV</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$229.89</td>
+            <td>$214.35</td>
+            <td class='neg'><strong>-6.76%</strong></td>
+            <td class='neg'>$-138.94</td>
+            <td><strong>$10,138.01</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">21</td>
+            <td>2025-12-25</td>
+            <td><strong>PLTR</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$194.17</td>
+            <td>$134.38</td>
+            <td class='pos'><strong>+30.79%</strong></td>
+            <td class='pos'>$+624.35</td>
+            <td><strong>$10,762.36</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">22</td>
+            <td>2025-12-25</td>
+            <td><strong>BABA</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$150.06</td>
+            <td>$165.40</td>
+            <td class='neg'><strong>-10.22%</strong></td>
+            <td class='neg'>$-220.04</td>
+            <td><strong>$10,542.32</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">23</td>
+            <td>2025-12-25</td>
+            <td><strong>JD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$29.17</td>
+            <td>$29.30</td>
+            <td class='neg'><strong>-0.45%</strong></td>
+            <td class='neg'>$-9.40</td>
+            <td><strong>$10,532.92</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">24</td>
+            <td>2025-12-25</td>
+            <td><strong>BA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$218.16</td>
+            <td>$230.33</td>
+            <td class='pos'><strong>+5.58%</strong></td>
+            <td class='pos'>$+117.52</td>
+            <td><strong>$10,650.44</strong></td>
+            <td style="color:#94a3b8;">231d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">25</td>
+            <td>2025-12-25</td>
+            <td><strong>MA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$579.45</td>
+            <td>$583.25</td>
+            <td class='pos'><strong>+0.66%</strong></td>
+            <td class='pos'>$+13.97</td>
+            <td><strong>$10,664.41</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">26</td>
+            <td>2025-12-25</td>
+            <td><strong>RTX</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$186.38</td>
+            <td>$220.48</td>
+            <td class='pos'><strong>+18.30%</strong></td>
+            <td class='pos'>$+390.23</td>
+            <td><strong>$11,054.64</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">27</td>
+            <td>2025-12-25</td>
+            <td><strong>MS</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$181.65</td>
+            <td>$218.38</td>
+            <td class='pos'><strong>+20.22%</strong></td>
+            <td class='pos'>$+447.05</td>
+            <td><strong>$11,501.69</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">28</td>
+            <td>2025-12-25</td>
+            <td><strong>V</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$355.14</td>
+            <td>$352.42</td>
+            <td class='neg'><strong>-0.76%</strong></td>
+            <td class='neg'>$-17.59</td>
+            <td><strong>$11,484.11</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">29</td>
+            <td>2025-12-25</td>
+            <td><strong>NVDA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$188.61</td>
+            <td>$225.30</td>
+            <td class='pos'><strong>+19.45%</strong></td>
+            <td class='pos'>$+446.80</td>
+            <td><strong>$11,930.90</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">30</td>
+            <td>2025-12-25</td>
+            <td><strong>META</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$667.55</td>
+            <td>$643.92</td>
+            <td class='neg'><strong>-3.54%</strong></td>
+            <td class='neg'>$-84.45</td>
+            <td><strong>$11,846.45</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">31</td>
+            <td>2025-12-25</td>
+            <td><strong>TSLA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$485.40</td>
+            <td>$453.56</td>
+            <td class='neg'><strong>-6.56%</strong></td>
+            <td class='neg'>$-155.43</td>
+            <td><strong>$11,691.02</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">32</td>
+            <td>2025-12-25</td>
+            <td><strong>ORCL</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$197.49</td>
+            <td>$156.22</td>
+            <td class='pos'><strong>+20.90%</strong></td>
+            <td class='pos'>$+488.62</td>
+            <td><strong>$12,179.65</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">33</td>
+            <td>2025-12-25</td>
+            <td><strong>ADBE</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$352.98</td>
+            <td>$331.27</td>
+            <td class='neg'><strong>-6.15%</strong></td>
+            <td class='neg'>$-149.82</td>
+            <td><strong>$12,029.82</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">34</td>
+            <td>2025-12-25</td>
+            <td><strong>CRM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$265.26</td>
+            <td>$255.74</td>
+            <td class='pos'><strong>+3.59%</strong></td>
+            <td class='pos'>$+86.35</td>
+            <td><strong>$12,116.17</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">35</td>
+            <td>2025-12-25</td>
+            <td><strong>AMD</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$215.04</td>
+            <td>$204.23</td>
+            <td class='neg'><strong>-5.03%</strong></td>
+            <td class='neg'>$-121.82</td>
+            <td><strong>$11,994.36</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">36</td>
+            <td>2025-12-25</td>
+            <td><strong>AVGO</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$350.22</td>
+            <td>$344.97</td>
+            <td class='pos'><strong>+1.50%</strong></td>
+            <td class='pos'>$+35.96</td>
+            <td><strong>$12,030.32</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">37</td>
+            <td>2025-12-25</td>
+            <td><strong>TSM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$298.80</td>
+            <td>$323.70</td>
+            <td class='neg'><strong>-8.33%</strong></td>
+            <td class='neg'>$-200.51</td>
+            <td><strong>$11,829.81</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">38</td>
+            <td>2025-12-25</td>
+            <td><strong>AMAT</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$260.78</td>
+            <td>$280.09</td>
+            <td class='neg'><strong>-7.40%</strong></td>
+            <td class='neg'>$-175.19</td>
+            <td><strong>$11,654.62</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">39</td>
+            <td>2025-12-25</td>
+            <td><strong>IBM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$304.56</td>
+            <td>$296.16</td>
+            <td class='neg'><strong>-2.76%</strong></td>
+            <td class='neg'>$-64.29</td>
+            <td><strong>$11,590.33</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">40</td>
+            <td>2025-12-25</td>
+            <td><strong>DIA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$487.01</td>
+            <td>$478.12</td>
+            <td class='neg'><strong>-1.83%</strong></td>
+            <td class='neg'>$-42.31</td>
+            <td><strong>$11,548.02</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">41</td>
+            <td>2025-12-25</td>
+            <td><strong>WFC</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$95.30</td>
+            <td>$88.38</td>
+            <td class='neg'><strong>-7.26%</strong></td>
+            <td class='neg'>$-167.71</td>
+            <td><strong>$11,380.31</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">42</td>
+            <td>2025-12-25</td>
+            <td><strong>IWM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$252.71</td>
+            <td>$303.50</td>
+            <td class='pos'><strong>+20.10%</strong></td>
+            <td class='pos'>$+457.45</td>
+            <td><strong>$11,837.76</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">43</td>
+            <td>2025-12-25</td>
+            <td><strong>JPM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$329.17</td>
+            <td>$329.19</td>
+            <td class='pos'><strong>+0.01%</strong></td>
+            <td class='pos'>$+0.14</td>
+            <td><strong>$11,837.90</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">44</td>
+            <td>2025-12-25</td>
+            <td><strong>XBI</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$126.30</td>
+            <td>$119.60</td>
+            <td class='neg'><strong>-5.30%</strong></td>
+            <td class='neg'>$-125.60</td>
+            <td><strong>$11,712.30</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">45</td>
+            <td>2025-12-25</td>
+            <td><strong>XLK</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$146.30</td>
+            <td>$190.77</td>
+            <td class='pos'><strong>+30.40%</strong></td>
+            <td class='pos'>$+712.02</td>
+            <td><strong>$12,424.33</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">46</td>
+            <td>2025-12-25</td>
+            <td><strong>XLF</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$55.73</td>
+            <td>$52.17</td>
+            <td class='neg'><strong>-6.40%</strong></td>
+            <td class='neg'>$-158.95</td>
+            <td><strong>$12,265.37</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">47</td>
+            <td>2025-12-25</td>
+            <td><strong>C</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$121.56</td>
+            <td>$138.73</td>
+            <td class='pos'><strong>+14.12%</strong></td>
+            <td class='pos'>$+346.49</td>
+            <td><strong>$12,611.86</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">48</td>
+            <td>2025-12-25</td>
+            <td><strong>SLV</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$65.22</td>
+            <td>$69.64</td>
+            <td class='neg'><strong>-6.78%</strong></td>
+            <td class='neg'>$-171.14</td>
+            <td><strong>$12,440.73</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">49</td>
+            <td>2025-12-25</td>
+            <td><strong>GLD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$411.93</td>
+            <td>$465.62</td>
+            <td class='neg'><strong>-13.03%</strong></td>
+            <td class='neg'>$-324.30</td>
+            <td><strong>$12,116.43</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">50</td>
+            <td>2025-12-25</td>
+            <td><strong>TLT</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$88.03</td>
+            <td>$82.59</td>
+            <td class='pos'><strong>+6.18%</strong></td>
+            <td class='pos'>$+149.75</td>
+            <td><strong>$12,266.18</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">51</td>
+            <td>2025-12-25</td>
+            <td><strong>XLE</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$44.37</td>
+            <td>$61.06</td>
+            <td class='pos'><strong>+37.62%</strong></td>
+            <td class='pos'>$+922.80</td>
+            <td><strong>$13,188.97</strong></td>
+            <td style="color:#94a3b8;">232d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">52</td>
+            <td>2026-01-05</td>
+            <td><strong>TGT</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$101.28</td>
+            <td>$107.75</td>
+            <td class='neg'><strong>-6.39%</strong></td>
+            <td class='neg'>$-168.64</td>
+            <td><strong>$13,020.34</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">53</td>
+            <td>2026-01-05</td>
+            <td><strong>BE</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$101.65</td>
+            <td>$122.60</td>
+            <td class='neg'><strong>-20.61%</strong></td>
+            <td class='neg'>$-536.70</td>
+            <td><strong>$12,483.64</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">54</td>
+            <td>2026-01-05</td>
+            <td><strong>PDD</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$117.58</td>
+            <td>$106.76</td>
+            <td class='neg'><strong>-9.20%</strong></td>
+            <td class='neg'>$-229.76</td>
+            <td><strong>$12,253.88</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">55</td>
+            <td>2026-01-05</td>
+            <td><strong>DKNG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$36.33</td>
+            <td>$32.62</td>
+            <td class='neg'><strong>-10.20%</strong></td>
+            <td class='neg'>$-249.97</td>
+            <td><strong>$12,003.92</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">56</td>
+            <td>2026-01-05</td>
+            <td><strong>SNOW</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$220.27</td>
+            <td>$337.38</td>
+            <td class='neg'><strong>-53.17%</strong></td>
+            <td class='neg'>$-1,276.41</td>
+            <td><strong>$10,727.50</strong></td>
+            <td style="color:#94a3b8;">220d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">57</td>
+            <td>2026-01-05</td>
+            <td><strong>UNH</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$336.07</td>
+            <td>$343.98</td>
+            <td class='neg'><strong>-2.35%</strong></td>
+            <td class='neg'>$-50.50</td>
+            <td><strong>$10,677.00</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">58</td>
+            <td>2026-01-05</td>
+            <td><strong>F</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$13.28</td>
+            <td>$12.14</td>
+            <td class='neg'><strong>-8.66%</strong></td>
+            <td class='neg'>$-184.85</td>
+            <td><strong>$10,492.15</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">59</td>
+            <td>2026-01-05</td>
+            <td><strong>SLB</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$43.36</td>
+            <td>$52.06</td>
+            <td class='pos'><strong>+20.06%</strong></td>
+            <td class='pos'>$+421.04</td>
+            <td><strong>$10,913.20</strong></td>
+            <td style="color:#94a3b8;">221d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">60</td>
+            <td>2026-01-05</td>
+            <td><strong>CVX</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$160.56</td>
+            <td>$197.70</td>
+            <td class='pos'><strong>+23.13%</strong></td>
+            <td class='pos'>$+504.88</td>
+            <td><strong>$11,418.07</strong></td>
+            <td style="color:#94a3b8;">221d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">61</td>
+            <td>2026-01-05</td>
+            <td><strong>DIS</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$112.91</td>
+            <td>$104.80</td>
+            <td class='pos'><strong>+7.18%</strong></td>
+            <td class='pos'>$+164.03</td>
+            <td><strong>$11,582.10</strong></td>
+            <td style="color:#94a3b8;">221d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">62</td>
+            <td>2026-01-05</td>
+            <td><strong>COST</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$876.14</td>
+            <td>$887.85</td>
+            <td class='neg'><strong>-1.34%</strong></td>
+            <td class='neg'>$-30.96</td>
+            <td><strong>$11,551.14</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">63</td>
+            <td>2026-01-05</td>
+            <td><strong>GS</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$951.84</td>
+            <td>$934.20</td>
+            <td class='pos'><strong>+1.85%</strong></td>
+            <td class='pos'>$+42.80</td>
+            <td><strong>$11,593.94</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">64</td>
+            <td>2026-01-05</td>
+            <td><strong>ADBE</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$331.79</td>
+            <td>$339.93</td>
+            <td class='pos'><strong>+2.45%</strong></td>
+            <td class='pos'>$+56.92</td>
+            <td><strong>$11,650.87</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">65</td>
+            <td>2026-01-05</td>
+            <td><strong>SMH</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$380.31</td>
+            <td>$387.10</td>
+            <td class='neg'><strong>-1.79%</strong></td>
+            <td class='neg'>$-41.61</td>
+            <td><strong>$11,609.26</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">66</td>
+            <td>2026-01-05</td>
+            <td><strong>BAC</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$57.08</td>
+            <td>$52.97</td>
+            <td class='neg'><strong>-7.21%</strong></td>
+            <td class='neg'>$-167.37</td>
+            <td><strong>$11,441.89</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">67</td>
+            <td>2026-01-05</td>
+            <td><strong>TSLA</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$453.32</td>
+            <td>$435.18</td>
+            <td class='pos'><strong>+4.00%</strong></td>
+            <td class='pos'>$+91.57</td>
+            <td><strong>$11,533.46</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">68</td>
+            <td>2026-01-05</td>
+            <td><strong>NFLX</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$91.76</td>
+            <td>$99.40</td>
+            <td class='neg'><strong>-8.32%</strong></td>
+            <td class='neg'>$-191.92</td>
+            <td><strong>$11,341.53</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">69</td>
+            <td>2026-01-05</td>
+            <td><strong>TSM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$323.54</td>
+            <td>$372.69</td>
+            <td class='pos'><strong>+15.19%</strong></td>
+            <td class='pos'>$+344.59</td>
+            <td><strong>$11,686.12</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">70</td>
+            <td>2026-01-05</td>
+            <td><strong>AMZN</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$231.46</td>
+            <td>$245.46</td>
+            <td class='neg'><strong>-6.05%</strong></td>
+            <td class='neg'>$-141.42</td>
+            <td><strong>$11,544.70</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">71</td>
+            <td>2026-01-05</td>
+            <td><strong>SPY</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$686.98</td>
+            <td>$777.88</td>
+            <td class='pos'><strong>+13.23%</strong></td>
+            <td class='pos'>$+305.52</td>
+            <td><strong>$11,850.22</strong></td>
+            <td style="color:#94a3b8;">220d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">72</td>
+            <td>2026-01-05</td>
+            <td><strong>QQQ</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$619.21</td>
+            <td>$732.07</td>
+            <td class='pos'><strong>+18.23%</strong></td>
+            <td class='pos'>$+431.97</td>
+            <td><strong>$12,282.19</strong></td>
+            <td style="color:#94a3b8;">221d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">73</td>
+            <td>2026-01-05</td>
+            <td><strong>XBI</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$119.67</td>
+            <td>$122.83</td>
+            <td class='pos'><strong>+2.64%</strong></td>
+            <td class='pos'>$+64.86</td>
+            <td><strong>$12,347.06</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">74</td>
+            <td>2026-01-05</td>
+            <td><strong>ARKK</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$80.63</td>
+            <td>$82.59</td>
+            <td class='neg'><strong>-2.43%</strong></td>
+            <td class='neg'>$-60.03</td>
+            <td><strong>$12,287.03</strong></td>
+            <td style="color:#94a3b8;">221d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">75</td>
+            <td>2026-01-05</td>
+            <td><strong>AMAT</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$280.01</td>
+            <td>$295.19</td>
+            <td class='neg'><strong>-5.42%</strong></td>
+            <td class='neg'>$-133.22</td>
+            <td><strong>$12,153.81</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">76</td>
+            <td>2026-01-06</td>
+            <td><strong>AAPL</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$262.50</td>
+            <td>$255.53</td>
+            <td class='neg'><strong>-2.66%</strong></td>
+            <td class='neg'>$-64.54</td>
+            <td><strong>$12,089.26</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">77</td>
+            <td>2026-01-06</td>
+            <td><strong>IBM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$298.36</td>
+            <td>$301.78</td>
+            <td class='pos'><strong>+1.15%</strong></td>
+            <td class='pos'>$+27.72</td>
+            <td><strong>$12,116.98</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">78</td>
+            <td>2026-01-06</td>
+            <td><strong>AMAT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$295.19</td>
+            <td>$534.54</td>
+            <td class='pos'><strong>+81.08%</strong></td>
+            <td class='pos'>$+1,964.97</td>
+            <td><strong>$14,081.95</strong></td>
+            <td style="color:#94a3b8;">220d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">79</td>
+            <td>2026-01-06</td>
+            <td><strong>COIN</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$247.80</td>
+            <td>$153.90</td>
+            <td class='pos'><strong>+37.89%</strong></td>
+            <td class='pos'>$+1,067.23</td>
+            <td><strong>$15,149.18</strong></td>
+            <td style="color:#94a3b8;">220d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">80</td>
+            <td>2026-01-06</td>
+            <td><strong>SHOP</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$163.76</td>
+            <td>$165.77</td>
+            <td class='pos'><strong>+1.22%</strong></td>
+            <td class='pos'>$+37.09</td>
+            <td><strong>$15,186.27</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">81</td>
+            <td>2026-01-08</td>
+            <td><strong>LOW</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$257.15</td>
+            <td>$277.55</td>
+            <td class='neg'><strong>-7.93%</strong></td>
+            <td class='neg'>$-240.95</td>
+            <td><strong>$14,945.32</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">82</td>
+            <td>2026-01-08</td>
+            <td><strong>UPS</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$107.72</td>
+            <td>$100.28</td>
+            <td class='neg'><strong>-6.91%</strong></td>
+            <td class='neg'>$-206.46</td>
+            <td><strong>$14,738.86</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">83</td>
+            <td>2026-01-08</td>
+            <td><strong>GM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$84.49</td>
+            <td>$76.21</td>
+            <td class='neg'><strong>-9.79%</strong></td>
+            <td class='neg'>$-288.71</td>
+            <td><strong>$14,450.16</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">84</td>
+            <td>2026-01-08</td>
+            <td><strong>SMH</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$378.60</td>
+            <td>$389.22</td>
+            <td class='neg'><strong>-2.81%</strong></td>
+            <td class='neg'>$-81.07</td>
+            <td><strong>$14,369.09</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">85</td>
+            <td>2026-01-08</td>
+            <td><strong>CMG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$39.46</td>
+            <td>$37.31</td>
+            <td class='neg'><strong>-5.43%</strong></td>
+            <td class='neg'>$-155.94</td>
+            <td><strong>$14,213.15</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">86</td>
+            <td>2026-01-08</td>
+            <td><strong>AMD</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$204.29</td>
+            <td>$483.01</td>
+            <td class='pos'><strong>+136.43%</strong></td>
+            <td class='pos'>$+3,878.30</td>
+            <td><strong>$18,091.45</strong></td>
+            <td style="color:#94a3b8;">217d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">87</td>
+            <td>2026-01-08</td>
+            <td><strong>HYG</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$80.90</td>
+            <td>$81.00</td>
+            <td class='neg'><strong>-0.12%</strong></td>
+            <td class='neg'>$-4.25</td>
+            <td><strong>$18,087.20</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">88</td>
+            <td>2026-01-08</td>
+            <td><strong>AMZN</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$245.46</td>
+            <td>$247.38</td>
+            <td class='pos'><strong>+0.78%</strong></td>
+            <td class='pos'>$+28.22</td>
+            <td><strong>$18,115.42</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">89</td>
+            <td>2026-01-08</td>
+            <td><strong>GOOG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$325.20</td>
+            <td>$312.20</td>
+            <td class='neg'><strong>-4.00%</strong></td>
+            <td class='neg'>$-144.83</td>
+            <td><strong>$17,970.59</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">90</td>
+            <td>2026-01-11</td>
+            <td><strong>OXY</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$42.86</td>
+            <td>$57.70</td>
+            <td class='pos'><strong>+34.62%</strong></td>
+            <td class='pos'>$+1,244.44</td>
+            <td><strong>$19,215.03</strong></td>
+            <td style="color:#94a3b8;">215d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">91</td>
+            <td>2026-01-11</td>
+            <td><strong>COST</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$924.88</td>
+            <td>$1003.64</td>
+            <td class='neg'><strong>-8.52%</strong></td>
+            <td class='neg'>$-327.26</td>
+            <td><strong>$18,887.77</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">92</td>
+            <td>2026-01-11</td>
+            <td><strong>SLV</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$72.38</td>
+            <td>$81.02</td>
+            <td class='neg'><strong>-11.94%</strong></td>
+            <td class='neg'>$-450.93</td>
+            <td><strong>$18,436.85</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">93</td>
+            <td>2026-01-11</td>
+            <td><strong>MA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$575.54</td>
+            <td>$539.49</td>
+            <td class='neg'><strong>-6.26%</strong></td>
+            <td class='neg'>$-230.97</td>
+            <td><strong>$18,205.88</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">94</td>
+            <td>2026-01-11</td>
+            <td><strong>ADBE</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$333.95</td>
+            <td>$296.12</td>
+            <td class='neg'><strong>-11.33%</strong></td>
+            <td class='neg'>$-412.47</td>
+            <td><strong>$17,793.41</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">95</td>
+            <td>2026-01-11</td>
+            <td><strong>META</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$653.06</td>
+            <td>$620.25</td>
+            <td class='neg'><strong>-5.02%</strong></td>
+            <td class='neg'>$-178.79</td>
+            <td><strong>$17,614.62</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">96</td>
+            <td>2026-01-11</td>
+            <td><strong>MSFT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$479.28</td>
+            <td>$411.61</td>
+            <td class='neg'><strong>-14.12%</strong></td>
+            <td class='neg'>$-497.41</td>
+            <td><strong>$17,117.21</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">97</td>
+            <td>2026-01-11</td>
+            <td><strong>IBM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$304.22</td>
+            <td>$281.56</td>
+            <td class='neg'><strong>-7.45%</strong></td>
+            <td class='neg'>$-255.00</td>
+            <td><strong>$16,862.22</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">98</td>
+            <td>2026-01-16</td>
+            <td><strong>TGT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$111.28</td>
+            <td>$155.51</td>
+            <td class='pos'><strong>+39.75%</strong></td>
+            <td class='pos'>$+1,340.43</td>
+            <td><strong>$18,202.65</strong></td>
+            <td style="color:#94a3b8;">210d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">99</td>
+            <td>2026-01-16</td>
+            <td><strong>JNJ</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$218.66</td>
+            <td>$262.08</td>
+            <td class='pos'><strong>+19.86%</strong></td>
+            <td class='pos'>$+722.91</td>
+            <td><strong>$18,925.56</strong></td>
+            <td style="color:#94a3b8;">209d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">100</td>
+            <td>2026-01-16</td>
+            <td><strong>UNH</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$331.02</td>
+            <td>$399.06</td>
+            <td class='neg'><strong>-20.55%</strong></td>
+            <td class='neg'>$-778.02</td>
+            <td><strong>$18,147.54</strong></td>
+            <td style="color:#94a3b8;">209d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">101</td>
+            <td>2026-01-16</td>
+            <td><strong>LLY</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$1038.40</td>
+            <td>$1060.56</td>
+            <td class='pos'><strong>+2.13%</strong></td>
+            <td class='pos'>$+77.46</td>
+            <td><strong>$18,225.00</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">102</td>
+            <td>2026-01-16</td>
+            <td><strong>XOM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$129.89</td>
+            <td>$158.61</td>
+            <td class='pos'><strong>+22.11%</strong></td>
+            <td class='pos'>$+805.95</td>
+            <td><strong>$19,030.94</strong></td>
+            <td style="color:#94a3b8;">210d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">103</td>
+            <td>2026-01-16</td>
+            <td><strong>LOW</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$277.55</td>
+            <td>$263.12</td>
+            <td class='neg'><strong>-5.20%</strong></td>
+            <td class='neg'>$-197.89</td>
+            <td><strong>$18,833.06</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">104</td>
+            <td>2026-01-16</td>
+            <td><strong>MA</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$539.49</td>
+            <td>$536.89</td>
+            <td class='pos'><strong>+0.48%</strong></td>
+            <td class='pos'>$+18.15</td>
+            <td><strong>$18,851.21</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">105</td>
+            <td>2026-01-16</td>
+            <td><strong>LMT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$582.43</td>
+            <td>$625.50</td>
+            <td class='pos'><strong>+7.39%</strong></td>
+            <td class='pos'>$+278.78</td>
+            <td><strong>$19,129.99</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">106</td>
+            <td>2026-01-16</td>
+            <td><strong>GS</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$962.00</td>
+            <td>$925.05</td>
+            <td class='neg'><strong>-3.84%</strong></td>
+            <td class='neg'>$-146.95</td>
+            <td><strong>$18,983.04</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">107</td>
+            <td>2026-01-16</td>
+            <td><strong>BAC</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$52.97</td>
+            <td>$56.58</td>
+            <td class='neg'><strong>-6.81%</strong></td>
+            <td class='neg'>$-258.39</td>
+            <td><strong>$18,724.65</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">108</td>
+            <td>2026-01-16</td>
+            <td><strong>JPM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$312.47</td>
+            <td>$363.11</td>
+            <td class='pos'><strong>+16.21%</strong></td>
+            <td class='pos'>$+606.92</td>
+            <td><strong>$19,331.57</strong></td>
+            <td style="color:#94a3b8;">209d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">109</td>
+            <td>2026-01-16</td>
+            <td><strong>SMH</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$400.39</td>
+            <td>$408.06</td>
+            <td class='pos'><strong>+1.92%</strong></td>
+            <td class='pos'>$+74.05</td>
+            <td><strong>$19,405.62</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">110</td>
+            <td>2026-01-16</td>
+            <td><strong>XBI</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$124.18</td>
+            <td>$156.86</td>
+            <td class='pos'><strong>+26.32%</strong></td>
+            <td class='pos'>$+1,021.38</td>
+            <td><strong>$20,427.00</strong></td>
+            <td style="color:#94a3b8;">210d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">111</td>
+            <td>2026-01-16</td>
+            <td><strong>AVGO</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$351.71</td>
+            <td>$310.33</td>
+            <td class='neg'><strong>-11.77%</strong></td>
+            <td class='neg'>$-480.71</td>
+            <td><strong>$19,946.29</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">112</td>
+            <td>2026-01-16</td>
+            <td><strong>V</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$328.30</td>
+            <td>$365.45</td>
+            <td class='neg'><strong>-11.32%</strong></td>
+            <td class='neg'>$-451.42</td>
+            <td><strong>$19,494.87</strong></td>
+            <td style="color:#94a3b8;">209d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">113</td>
+            <td>2026-02-09</td>
+            <td><strong>ABBV</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$222.85</td>
+            <td>$211.13</td>
+            <td class='neg'><strong>-5.26%</strong></td>
+            <td class='neg'>$-205.05</td>
+            <td><strong>$19,289.82</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">114</td>
+            <td>2026-02-09</td>
+            <td><strong>PEP</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$166.87</td>
+            <td>$153.56</td>
+            <td class='neg'><strong>-7.98%</strong></td>
+            <td class='neg'>$-307.72</td>
+            <td><strong>$18,982.10</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">115</td>
+            <td>2026-02-09</td>
+            <td><strong>BAC</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$56.58</td>
+            <td>$52.06</td>
+            <td class='neg'><strong>-7.97%</strong></td>
+            <td class='neg'>$-302.73</td>
+            <td><strong>$18,679.37</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">116</td>
+            <td>2026-02-09</td>
+            <td><strong>GLD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$465.49</td>
+            <td>$466.37</td>
+            <td class='neg'><strong>-0.19%</strong></td>
+            <td class='neg'>$-7.06</td>
+            <td><strong>$18,672.31</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">117</td>
+            <td>2026-02-09</td>
+            <td><strong>COST</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$1003.64</td>
+            <td>$981.45</td>
+            <td class='pos'><strong>+2.21%</strong></td>
+            <td class='pos'>$+82.57</td>
+            <td><strong>$18,754.88</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">118</td>
+            <td>2026-02-09</td>
+            <td><strong>AMZN</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$209.48</td>
+            <td>$205.37</td>
+            <td class='pos'><strong>+1.96%</strong></td>
+            <td class='pos'>$+73.54</td>
+            <td><strong>$18,828.42</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">119</td>
+            <td>2026-02-09</td>
+            <td><strong>MSFT</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$411.61</td>
+            <td>$378.42</td>
+            <td class='pos'><strong>+8.06%</strong></td>
+            <td class='pos'>$+303.60</td>
+            <td><strong>$19,132.02</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">120</td>
+            <td>2026-02-09</td>
+            <td><strong>AAPL</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$273.32</td>
+            <td>$278.81</td>
+            <td class='pos'><strong>+2.01%</strong></td>
+            <td class='pos'>$+76.86</td>
+            <td><strong>$19,208.87</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">121</td>
+            <td>2026-02-09</td>
+            <td><strong>TSLA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$418.76</td>
+            <td>$348.07</td>
+            <td class='neg'><strong>-16.88%</strong></td>
+            <td class='neg'>$-648.48</td>
+            <td><strong>$18,560.39</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">122</td>
+            <td>2026-02-11</td>
+            <td><strong>META</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$665.16</td>
+            <td>$594.97</td>
+            <td class='pos'><strong>+10.55%</strong></td>
+            <td class='pos'>$+391.74</td>
+            <td><strong>$18,952.13</strong></td>
+            <td style="color:#94a3b8;">184d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">123</td>
+            <td>2026-02-11</td>
+            <td><strong>IBM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$281.56</td>
+            <td>$241.46</td>
+            <td class='neg'><strong>-14.24%</strong></td>
+            <td class='neg'>$-539.84</td>
+            <td><strong>$18,412.29</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">124</td>
+            <td>2026-02-11</td>
+            <td><strong>TXN</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$230.07</td>
+            <td>$211.04</td>
+            <td class='neg'><strong>-8.27%</strong></td>
+            <td class='neg'>$-304.58</td>
+            <td><strong>$18,107.71</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">125</td>
+            <td>2026-02-11</td>
+            <td><strong>HD</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$388.45</td>
+            <td>$335.93</td>
+            <td class='neg'><strong>-13.52%</strong></td>
+            <td class='neg'>$-489.61</td>
+            <td><strong>$17,618.10</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">126</td>
+            <td>2026-02-11</td>
+            <td><strong>GE</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$316.51</td>
+            <td>$360.64</td>
+            <td class='pos'><strong>+13.94%</strong></td>
+            <td class='pos'>$+491.29</td>
+            <td><strong>$18,109.39</strong></td>
+            <td style="color:#94a3b8;">183d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">127</td>
+            <td>2026-02-11</td>
+            <td><strong>CAT</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$770.22</td>
+            <td>$854.60</td>
+            <td class='pos'><strong>+10.96%</strong></td>
+            <td class='pos'>$+396.79</td>
+            <td><strong>$18,506.18</strong></td>
+            <td style="color:#94a3b8;">184d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">128</td>
+            <td>2026-02-11</td>
+            <td><strong>LLY</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$1025.02</td>
+            <td>$958.47</td>
+            <td class='neg'><strong>-6.49%</strong></td>
+            <td class='neg'>$-240.27</td>
+            <td><strong>$18,265.91</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">129</td>
+            <td>2026-02-26</td>
+            <td><strong>LOW</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$263.17</td>
+            <td>$218.22</td>
+            <td class='pos'><strong>+17.08%</strong></td>
+            <td class='pos'>$+624.03</td>
+            <td><strong>$18,889.93</strong></td>
+            <td style="color:#94a3b8;">169d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">130</td>
+            <td>2026-02-26</td>
+            <td><strong>SBUX</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$98.29</td>
+            <td>$108.55</td>
+            <td class='pos'><strong>+10.43%</strong></td>
+            <td class='pos'>$+394.15</td>
+            <td><strong>$19,284.09</strong></td>
+            <td style="color:#94a3b8;">169d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">131</td>
+            <td>2026-02-26</td>
+            <td><strong>MCD</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$334.39</td>
+            <td>$304.71</td>
+            <td class='neg'><strong>-8.88%</strong></td>
+            <td class='neg'>$-342.33</td>
+            <td><strong>$18,941.76</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">132</td>
+            <td>2026-02-26</td>
+            <td><strong>XLF</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$52.17</td>
+            <td>$58.26</td>
+            <td class='neg'><strong>-11.66%</strong></td>
+            <td class='neg'>$-441.82</td>
+            <td><strong>$18,499.94</strong></td>
+            <td style="color:#94a3b8;">168d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">133</td>
+            <td>2026-02-26</td>
+            <td><strong>CRM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$195.70</td>
+            <td>$201.37</td>
+            <td class='neg'><strong>-2.90%</strong></td>
+            <td class='neg'>$-107.20</td>
+            <td><strong>$18,392.74</strong></td>
+            <td style="color:#94a3b8;">169d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">134</td>
+            <td>2026-02-26</td>
+            <td><strong>TXN</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$211.04</td>
+            <td>$273.43</td>
+            <td class='pos'><strong>+29.56%</strong></td>
+            <td class='pos'>$+1,087.38</td>
+            <td><strong>$19,480.12</strong></td>
+            <td style="color:#94a3b8;">169d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">135</td>
+            <td>2026-02-26</td>
+            <td><strong>AAPL</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$271.41</td>
+            <td>$305.26</td>
+            <td class='pos'><strong>+12.47%</strong></td>
+            <td class='pos'>$+485.91</td>
+            <td><strong>$19,966.03</strong></td>
+            <td style="color:#94a3b8;">169d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">136</td>
+            <td>2026-02-26</td>
+            <td><strong>GLD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$475.48</td>
+            <td>$437.01</td>
+            <td class='pos'><strong>+8.09%</strong></td>
+            <td class='pos'>$+323.12</td>
+            <td><strong>$20,289.15</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">137</td>
+            <td>2026-04-08</td>
+            <td><strong>PFE</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$27.15</td>
+            <td>$26.80</td>
+            <td class='neg'><strong>-1.27%</strong></td>
+            <td class='neg'>$-51.57</td>
+            <td><strong>$20,237.57</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">138</td>
+            <td>2026-04-08</td>
+            <td><strong>LLY</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$958.47</td>
+            <td>$1209.00</td>
+            <td class='pos'><strong>+26.14%</strong></td>
+            <td class='pos'>$+1,057.96</td>
+            <td><strong>$21,295.54</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">139</td>
+            <td>2026-04-08</td>
+            <td><strong>GM</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$76.22</td>
+            <td>$86.39</td>
+            <td class='pos'><strong>+13.35%</strong></td>
+            <td class='pos'>$+568.41</td>
+            <td><strong>$21,863.95</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">140</td>
+            <td>2026-04-08</td>
+            <td><strong>MCD</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$304.71</td>
+            <td>$272.25</td>
+            <td class='neg'><strong>-10.65%</strong></td>
+            <td class='neg'>$-465.82</td>
+            <td><strong>$21,398.12</strong></td>
+            <td style="color:#94a3b8;">127d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="win">
+            <td style="color:#94a3b8;">141</td>
+            <td>2026-04-08</td>
+            <td><strong>COST</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$1023.60</td>
+            <td>$961.85</td>
+            <td class='pos'><strong>+6.03%</strong></td>
+            <td class='pos'>$+258.19</td>
+            <td><strong>$21,656.32</strong></td>
+            <td style="color:#94a3b8;">127d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">142</td>
+            <td>2026-04-08</td>
+            <td><strong>GS</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$902.21</td>
+            <td>$1042.63</td>
+            <td class='pos'><strong>+15.56%</strong></td>
+            <td class='pos'>$+674.12</td>
+            <td><strong>$22,330.44</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">143</td>
+            <td>2026-04-08</td>
+            <td><strong>WFC</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$84.78</td>
+            <td>$88.11</td>
+            <td class='pos'><strong>+3.93%</strong></td>
+            <td class='pos'>$+175.69</td>
+            <td><strong>$22,506.13</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">144</td>
+            <td>2026-04-08</td>
+            <td><strong>HD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$335.93</td>
+            <td>$341.70</td>
+            <td class='neg'><strong>-1.72%</strong></td>
+            <td class='neg'>$-77.31</td>
+            <td><strong>$22,428.81</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">145</td>
+            <td>2026-04-08</td>
+            <td><strong>SMH</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$421.73</td>
+            <td>$589.12</td>
+            <td class='neg'><strong>-39.69%</strong></td>
+            <td class='neg'>$-1,780.46</td>
+            <td><strong>$20,648.36</strong></td>
+            <td style="color:#94a3b8;">127d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">146</td>
+            <td>2026-04-08</td>
+            <td><strong>HYG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$80.18</td>
+            <td>$79.79</td>
+            <td class='neg'><strong>-0.49%</strong></td>
+            <td class='neg'>$-20.09</td>
+            <td><strong>$20,628.27</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="CLOSED" data-pnl="loss">
+            <td style="color:#94a3b8;">147</td>
+            <td>2026-04-08</td>
+            <td><strong>TSM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-closed'>CLOSED</span></td>
+            <td>$366.04</td>
+            <td>$430.49</td>
+            <td class='neg'><strong>-17.61%</strong></td>
+            <td class='neg'>$-726.48</td>
+            <td><strong>$19,901.79</strong></td>
+            <td style="color:#94a3b8;">127d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">148</td>
+            <td>2026-04-08</td>
+            <td><strong>AVGO</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$348.72</td>
+            <td>$417.82</td>
+            <td class='pos'><strong>+19.82%</strong></td>
+            <td class='pos'>$+788.72</td>
+            <td><strong>$20,690.51</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">149</td>
+            <td>2026-04-08</td>
+            <td><strong>ADBE</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$243.33</td>
+            <td>$270.49</td>
+            <td class='pos'><strong>+11.16%</strong></td>
+            <td class='pos'>$+461.89</td>
+            <td><strong>$21,152.40</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">150</td>
+            <td>2026-04-08</td>
+            <td><strong>GOOG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$316.66</td>
+            <td>$343.94</td>
+            <td class='pos'><strong>+8.61%</strong></td>
+            <td class='pos'>$+364.45</td>
+            <td><strong>$21,516.85</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="win">
+            <td style="color:#94a3b8;">151</td>
+            <td>2026-04-08</td>
+            <td><strong>BAC</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$51.79</td>
+            <td>$64.09</td>
+            <td class='pos'><strong>+23.74%</strong></td>
+            <td class='pos'>$+1,021.53</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">128d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">152</td>
+            <td>2026-08-13</td>
+            <td><strong>V</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$365.45</td>
+            <td>$365.45</td>
+            <td class='neg'><strong>-0.00%</strong></td>
+            <td class='neg'>$-0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">153</td>
+            <td>2026-08-13</td>
+            <td><strong>ROKU</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$154.08</td>
+            <td>$154.08</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">154</td>
+            <td>2026-08-13</td>
+            <td><strong>UPS</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$105.54</td>
+            <td>$105.54</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">155</td>
+            <td>2026-08-13</td>
+            <td><strong>UPS</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$105.54</td>
+            <td>$105.54</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">156</td>
+            <td>2026-08-13</td>
+            <td><strong>ABBV</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$250.82</td>
+            <td>$250.82</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">157</td>
+            <td>2026-08-13</td>
+            <td><strong>SNOW</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$337.38</td>
+            <td>$337.38</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">158</td>
+            <td>2026-08-13</td>
+            <td><strong>SNOW</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$337.38</td>
+            <td>$337.38</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">159</td>
+            <td>2026-08-13</td>
+            <td><strong>V</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$365.45</td>
+            <td>$365.45</td>
+            <td class='neg'><strong>-0.00%</strong></td>
+            <td class='neg'>$-0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">160</td>
+            <td>2026-08-13</td>
+            <td><strong>ABBV</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$250.82</td>
+            <td>$250.82</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">161</td>
+            <td>2026-08-13</td>
+            <td><strong>XLF</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$58.26</td>
+            <td>$58.26</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">162</td>
+            <td>2026-08-13</td>
+            <td><strong>MU</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$949.83</td>
+            <td>$949.83</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">163</td>
+            <td>2026-08-13</td>
+            <td><strong>GLD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$398.96</td>
+            <td>$398.96</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">164</td>
+            <td>2026-08-13</td>
+            <td><strong>GLD</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$398.96</td>
+            <td>$398.96</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">165</td>
+            <td>2026-08-13</td>
+            <td><strong>DIA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$537.91</td>
+            <td>$537.91</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">166</td>
+            <td>2026-08-13</td>
+            <td><strong>DIA</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$537.91</td>
+            <td>$537.91</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">167</td>
+            <td>2026-08-13</td>
+            <td><strong>TSM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$430.49</td>
+            <td>$430.49</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">168</td>
+            <td>2026-08-13</td>
+            <td><strong>TSM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$430.49</td>
+            <td>$430.49</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">169</td>
+            <td>2026-08-13</td>
+            <td><strong>MU</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$949.83</td>
+            <td>$949.83</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">170</td>
+            <td>2026-08-13</td>
+            <td><strong>QCOM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$164.79</td>
+            <td>$164.79</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="SHORT" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">171</td>
+            <td>2026-08-13</td>
+            <td><strong>QCOM</strong></td>
+            <td><span class='tag tag-short'>SHORT</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$164.79</td>
+            <td>$164.79</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">172</td>
+            <td>2026-08-13</td>
+            <td><strong>DDOG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$252.24</td>
+            <td>$252.24</td>
+            <td class='neg'><strong>-0.00%</strong></td>
+            <td class='neg'>$-0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="breakeven">
+            <td style="color:#94a3b8;">173</td>
+            <td>2026-08-13</td>
+            <td><strong>XLF</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$58.26</td>
+            <td>$58.26</td>
+            <td class='zero'><strong>+0.00%</strong></td>
+            <td class='zero'>$+0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+
+        <tr data-type="LONG" data-status="OPEN" data-pnl="loss">
+            <td style="color:#94a3b8;">174</td>
+            <td>2026-08-13</td>
+            <td><strong>DDOG</strong></td>
+            <td><span class='tag tag-long'>LONG</span></td>
+            <td><span class='tag tag-open'>OPEN</span></td>
+            <td>$252.24</td>
+            <td>$252.24</td>
+            <td class='neg'><strong>-0.00%</strong></td>
+            <td class='neg'>$-0.00</td>
+            <td><strong>$22,538.38</strong></td>
+            <td style="color:#94a3b8;">1d</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <!-- ============================================================= -->
+        <!-- SECTION 9: MASTER KPI ENCYCLOPEDIA -->
+        <!-- ============================================================= -->
+        <div class="section-header" id="encyclopedia">
+            <div>
+                <div class="section-title">📚 9. Quantitative KPI Master Encyclopedia</div>
+                <div class="section-desc">Comprehensive reference guide to quantitative finance metrics and desirable benchmarks.</div>
+            </div>
+        </div>
+
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">KPI Name</th>
+                    <th style="width: 28%;">What It Measures (Intuition)</th>
+                    <th style="width: 25%;">Mathematical Formula</th>
+                    <th style="width: 25%;">What is Desirable (Target)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Sharpe Ratio</strong></td>
+                    <td>Risk-adjusted return per unit of total volatility.</td>
+                    <td><code>(CAGR - Rf) / σ_ann</code></td>
+                    <td><span class="badge-pill badge-green">> 1.0 Good, > 2.0 Excellent, > 3.0 Elite</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Sortino Ratio</strong></td>
+                    <td>Risk-adjusted return penalizing only downside negative volatility.</td>
+                    <td><code>(CAGR - Rf) / σ_down</code></td>
+                    <td><span class="badge-pill badge-green">> 1.5 Good, > 3.0 Excellent</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Calmar Ratio</strong></td>
+                    <td>Annualized return earned per percentage of maximum drawdown.</td>
+                    <td><code>CAGR / |Max Drawdown|</code></td>
+                    <td><span class="badge-pill badge-green">> 1.0 Acceptable, > 3.0 Great</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Profit Factor</strong></td>
+                    <td>Gross dollar gains divided by gross dollar losses.</td>
+                    <td><code>Gross Profits / Gross Losses</code></td>
+                    <td><span class="badge-pill badge-green">> 1.50 Good, > 2.00 Institutional</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Payoff Ratio</strong></td>
+                    <td>Average percentage gain on winners divided by average loss on losers.</td>
+                    <td><code>Avg Win % / |Avg Loss %|</code></td>
+                    <td><span class="badge-pill badge-green">> 1.5x - 2.5x (allows sub-50% win rate)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Jensen's Alpha</strong></td>
+                    <td>Risk-adjusted excess return over CAPM market expectation.</td>
+                    <td><code>R_bot - [Rf + β*(R_m - Rf)]</code></td>
+                    <td><span class="badge-pill badge-green">> 0% with p < 0.05 (statistically valid skill)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>T-Test P-Value</strong></td>
+                    <td>Probability that positive edge was caused by pure luck.</td>
+                    <td><code>1 - T_CDF(t, df=n-1)</code></td>
+                    <td><span class="badge-pill badge-green">p < 0.05 (95% confidence of true edge)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Probabilistic Sharpe Ratio</strong></td>
+                    <td>Probability that true Sharpe Ratio is > 0, adjusted for non-normality.</td>
+                    <td><code>Φ((SR - SR*) / σ_SR)</code></td>
+                    <td><span class="badge-pill badge-green">PSR ≥ 95% for institutional deployment</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Full & Half Kelly</strong></td>
+                    <td>Optimal bet sizing percentage to maximize geometric growth.</td>
+                    <td><code>W - (1-W)/R</code></td>
+                    <td><span class="badge-pill badge-amber">Bet ≤ Half-Kelly to prevent ruin</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Client-side Interactive Filter Script -->
+    <script>
+        let currentFilter = 'ALL';
+
+        function setFilter(filterType, btn) {
+            currentFilter = filterType;
+            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterTrades();
+        }
+
+        function filterTrades() {
+            const search = document.getElementById('tradeSearch').value.toUpperCase();
+            const rows = document.querySelectorAll('#tradesTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toUpperCase();
+                const type = row.getAttribute('data-type');
+                const status = row.getAttribute('data-status');
+                const pnl = row.getAttribute('data-pnl');
+
+                let matchesFilter = true;
+                if (currentFilter === 'WIN') matchesFilter = (pnl === 'win');
+                else if (currentFilter === 'LOSS') matchesFilter = (pnl === 'loss');
+                else if (currentFilter === 'LONG') matchesFilter = (type === 'LONG');
+                else if (currentFilter === 'SHORT') matchesFilter = (type === 'SHORT');
+                else if (currentFilter === 'OPEN') matchesFilter = (status === 'OPEN');
+                else if (currentFilter === 'CLOSED') matchesFilter = (status === 'CLOSED');
+
+                const matchesSearch = text.includes(search);
+
+                if (matchesFilter && matchesSearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
